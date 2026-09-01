@@ -77,3 +77,21 @@ CREATE TABLE enrolments(
     CONSTRAINT FK_Enrolments_Events FOREIGN KEY (EventID) REFERENCES events(EventID),
     CONSTRAINT FK_Enrolments_Categories FOREIGN KEY (CategoryID) REFERENCES categories(CategoryID)
 );
+
+--create table results
+CREATE TABLE results(
+    ResultID INT PRIMARY KEY IDENTITY(1,1),
+    EnrolmentID INT NOT NULL,
+    FinishTime TIME NULL,
+    FinishPosition INT NULL,
+    TotalParticipants INT NULL,
+    CategoryPosition INT NULL,
+    TotalCategoryParticipants INT NULL,
+    Status VARCHAR(20) NOT NULL DEFAULT('DNS') CHECK (Status IN ('Pending', 'Confirmed', 'DNS', 'DNF', 'Disqualified')),
+    RecordedAt DATETIME DEFAULT GETDATE(),
+    RecordedBy INT NOT NULL,
+    Notes VARCHAR(500) NULL,
+    
+    CONSTRAINT FK_Results_Enrolments FOREIGN KEY (EnrolmentID) REFERENCES enrolments(EnrolmentID) ON DELETE CASCADE,
+    CONSTRAINT FK_Results_Users FOREIGN KEY (RecordedBy) REFERENCES users(userID)
+);
