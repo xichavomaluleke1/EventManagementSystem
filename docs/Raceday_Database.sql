@@ -41,3 +41,20 @@ CREATE TABLE events(
     
     CONSTRAINT FK_Events_Users FOREIGN KEY (OrganiserID) REFERENCES users(userID)
 );
+
+--create table categories
+CREATE TABLE categories(
+    CategoryID INT PRIMARY KEY IDENTITY(1,1),
+    EventID INT NOT NULL,
+    CategoryName VARCHAR(100) NOT NULL,
+    Description VARCHAR(500) NULL,
+    MinAge INT NULL,
+    MaxAge INT NULL,
+    MinDistance DECIMAL(10,2) NULL,
+    MaxDistance DECIMAL(10,2) NULL,
+    EntryFee DECIMAL(10,2) DEFAULT(0),
+    CreatedAt DATETIME DEFAULT GETDATE(),
+    IsActive BIT DEFAULT(1),
+    
+    CONSTRAINT FK_Categories_Events FOREIGN KEY (EventID) REFERENCES events(EventID) ON DELETE CASCADE
+);
