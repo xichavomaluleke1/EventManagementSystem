@@ -95,3 +95,18 @@ CREATE TABLE results(
     CONSTRAINT FK_Results_Enrolments FOREIGN KEY (EnrolmentID) REFERENCES enrolments(EnrolmentID) ON DELETE CASCADE,
     CONSTRAINT FK_Results_Users FOREIGN KEY (RecordedBy) REFERENCES users(userID)
 );
+
+--create table EventOrganisers
+CREATE TABLE EventOrganisers(
+    EventOrganiserID INT PRIMARY KEY IDENTITY(1,1),
+    UserID INT NOT NULL UNIQUE,
+    OrganizationName VARCHAR(255) NULL,
+    OrganizationType VARCHAR(50) NULL,
+    Website VARCHAR(255) NULL,
+    ContactNumber VARCHAR(20) NULL,
+    Bio VARCHAR(1000) NULL,
+    CreatedAt DATETIME DEFAULT GETDATE(),
+    UpdatedAt DATETIME DEFAULT GETDATE(),
+    
+    CONSTRAINT FK_EventOrganisers_Users FOREIGN KEY (UserID) REFERENCES users(userID) ON DELETE CASCADE
+);
