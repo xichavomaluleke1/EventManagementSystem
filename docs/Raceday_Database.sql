@@ -58,3 +58,22 @@ CREATE TABLE categories(
     
     CONSTRAINT FK_Categories_Events FOREIGN KEY (EventID) REFERENCES events(EventID) ON DELETE CASCADE
 );
+
+--create table enrolments
+CREATE TABLE enrolments(
+    EnrolmentID INT PRIMARY KEY IDENTITY(1,1),
+    ParticipantID INT NOT NULL,
+    EventID INT NOT NULL,
+    CategoryID INT NOT NULL,
+    EnrolmentDate DATETIME DEFAULT GETDATE(),
+    Status VARCHAR(20) NOT NULL DEFAULT('Pending') CHECK (Status IN ('Pending', 'Confirmed', 'Cancelled', 'Withdrawn', 'Completed')),
+    PaymentStatus VARCHAR(20) NOT NULL DEFAULT('Pending') CHECK (PaymentStatus IN ('Pending', 'Paid', 'Refunded', 'Cancelled')),
+    paymentReference VARCHAR(100) NULL,
+    Notes VARCHAR(500) NULL,
+    CreatedAt DATETIME DEFAULT GETDATE(),
+    UpdatedAt DATETIME DEFAULT GETDATE(),
+    
+    CONSTRAINT FK_Enrolments_Users FOREIGN KEY (ParticipantID) REFERENCES users(userID),
+    CONSTRAINT FK_Enrolments_Events FOREIGN KEY (EventID) REFERENCES events(EventID),
+    CONSTRAINT FK_Enrolments_Categories FOREIGN KEY (CategoryID) REFERENCES categories(CategoryID)
+);
