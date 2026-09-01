@@ -212,3 +212,31 @@ INSERT INTO results (EnrolmentID, FinishTime, FinishPosition, TotalParticipants,
 VALUES 
     (5, '04:45:30', 156, 1500, 23, 150, 'Confirmed', 2, 'Finished strong'),
     (6, '05:12:45', 289, 1500, 45, 150, 'Confirmed', 2, 'Good performance');
+
+-- Check all tables have data
+SELECT 'users' AS TableName, COUNT(*) AS Count FROM users
+UNION ALL
+SELECT 'EventOrganisers', COUNT(*) FROM EventOrganisers
+UNION ALL
+SELECT 'events', COUNT(*) FROM events
+UNION ALL
+SELECT 'categories', COUNT(*) FROM categories
+UNION ALL
+SELECT 'enrolments', COUNT(*) FROM enrolments
+UNION ALL
+SELECT 'results', COUNT(*) FROM results;
+
+-- Show role summary
+SELECT role, COUNT(*) AS UserCount FROM users GROUP BY role;
+
+-- Show enrolment summary by event
+SELECT 
+    e.EventName,
+    COUNT(en.EnrolmentID) AS TotalEnrolments,
+    COUNT(CASE WHEN en.Status = 'Confirmed' THEN 1 END) AS Confirmed,
+    COUNT(r.ResultID) AS ResultsEntered
+FROM events e
+LEFT JOIN enrolments en ON e.EventID = en.EventID
+LEFT JOIN results r ON en.EnrolmentID = r.EnrolmentID
+GROUP BY e.EventID, e.EventName
+ORDER BY e.EventName;
