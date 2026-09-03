@@ -58,7 +58,7 @@ The database consists of 7 core tables:
 
 ### Entity Relationship Diagram
 
-![ERD](docs/erd.png)
+![ERD](https://github.com/xichavomaluleke1/EventManagementSystem/blob/main/docs/ERD.png)
 
 ---
 
