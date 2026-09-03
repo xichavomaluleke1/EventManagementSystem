@@ -164,7 +164,7 @@ Green Build Screenshot:
 <img width="669" height="376" alt="image" src="https://github.com/user-attachments/assets/7df560bf-8085-4b7e-b4bb-159d791cd107" /> 
 
 📹 Video Presentation
-Watch the full walkthrough of the RaceDay system: 
+Watch the full walkthrough of the RaceDay system: https://youtu.be/GcvcQzto8Z4
 
 📝 Part 1 Submission Checklist
 ☑ GitHub repository created
@@ -188,6 +188,10 @@ ASP.NET Core MVC	Frontend web application (Part 3)
 Azure Blob Storage	File/Image storage (Part 3)
 Docker	Containerization (Part 3)
 GitHub Actions	CI/CD automation
+
+
+
+
 Swagger/OpenAPI	API documentation
 Bootstrap	UI styling (Part 3)
 
