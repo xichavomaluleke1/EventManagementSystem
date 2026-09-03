@@ -1,0 +1,137 @@
+name: CI - Validate Repository Structure
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  validate-docs:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Validate /docs folder exists
+      run: |
+        if [ -d "docs" ]; then
+          echo "✅ /docs folder exists"
+        else
+          echo "❌ /docs folder not found!"
+          exit 1
+        fi
+
+    - name: Validate API ENDPOINT PLAN.pdf exists
+      run: |
+        if [ -f "docs/API ENDPOINT PLAN.pdf" ]; then
+          echo "✅ API ENDPOINT PLAN.pdf exists"
+        else
+          echo "❌ API ENDPOINT PLAN.pdf not found!"
+          exit 1
+        fi
+
+    - name: Validate ERD.jpeg exists
+      run: |
+        if [ -f "docs/ERD.jpeg" ]; then
+          echo "✅ ERD.jpeg exists"
+        else
+          echo "❌ ERD.jpeg not found!"
+          exit 1
+        fi
+
+    - name: Validate Raceday_Database.sql exists
+      run: |
+        if [ -f "docs/Raceday_Database.sql" ]; then
+          echo "✅ Raceday_Database.sql exists"
+        else
+          echo "❌ Raceday_Database.sql not found!"
+          exit 1
+        fi
+
+    - name: Validate README.md exists
+      run: |
+        if [ -f "README.md" ]; then
+          echo "✅ README.md exists"
+        else
+          echo "❌ README.md not found!"
+          exit 1
+        fi
+
+    - name: List all files in /docs folder
+      run: |
+        echo "📁 Files in /docs folder:"
+        ls -la docs/
+
+    - name: Count files in /docs folder
+      run: |
+        count=$(ls -1 docs/ | wc -l)
+        echo "📊 Total files in /docs: $count"
+        
+        if [ $count -ge 3 ]; then
+          echo "✅ Minimum 3 files found in /docs folder"
+        else
+          echo "❌ Less than 3 files found in /docs folder!"
+          exit 1
+        fi
+
+    - name: Validate SQL script syntax
+      run: |
+        if grep -q "CREATE TABLE" docs/Raceday_Database.sql; then
+          echo "✅ SQL script contains CREATE TABLE statements"
+        else
+          echo "❌ SQL script missing CREATE TABLE statements!"
+          exit 1
+        fi
+
+        if grep -q "INSERT INTO" docs/Raceday_Database.sql; then
+          echo "✅ SQL script contains INSERT INTO statements (seed data)"
+        else
+          echo "⚠️ SQL script missing INSERT INTO statements!"
+        fi
+
+    - name: Validate ERD file format
+      run: |
+        if file docs/ERD.jpeg | grep -q "JPEG"; then
+          echo "✅ ERD is a valid JPEG image"
+        else
+          echo "⚠️ ERD may not be a valid JPEG image"
+        fi
+
+    - name: Validate API Endpoint Plan file
+      run: |
+        if file "docs/API ENDPOINT PLAN.pdf" | grep -q "PDF"; then
+          echo "✅ API ENDPOINT PLAN is a valid PDF file"
+        else
+          echo "⚠️ API ENDPOINT PLAN may not be a valid PDF file"
+        fi
+
+    - name: Validate README.md content
+      run: |
+        if grep -q "##" README.md; then
+          echo "✅ README.md has headers"
+        else
+          echo "⚠️ README.md may be missing headers"
+        fi
+
+        if grep -q "Video" README.md || grep -q "youtube" README.md; then
+          echo "✅ README.md contains video link"
+        else
+          echo "⚠️ README.md may be missing video link"
+        fi
+
+    - name: Success message
+      run: |
+        echo "🎉 All validations passed successfully!"
+        echo "✅ Repository structure is valid for Part 1 submission"
+
+    - name: Failure message (runs on failure)
+      if: failure()
+      run: |
+        echo "❌ Validation failed. Please check your repository structure."
+        echo "Required files in /docs folder:"
+        echo "  - API ENDPOINT PLAN.pdf"
+        echo "  - ERD.jpeg"
+        echo "  - Raceday_Database.sql"
+        echo "  - README.md (in root folder)"
