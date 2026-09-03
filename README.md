@@ -160,5 +160,5 @@ API Endpoint Plan is a valid PDF file
 Counts files
 Ensures minimum of 3 files in /docs folder
 
-Green Build Screenshot:
-
+Green Build Screenshot:                                                                                
+<img width="669" height="376" alt="image" src="https://github.com/user-attachments/assets/7df560bf-8085-4b7e-b4bb-159d791cd107" />
