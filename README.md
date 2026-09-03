@@ -55,7 +55,6 @@ The database consists of 7 core tables:
 | `categories` | Age and distance categories for each event |
 | `enrolments` | Links participants to events and categories |
 | `results` | Race results for enrolled participants |
-| `EventRoutes` | Route information for events (optional) |
 
 ### Entity Relationship Diagram
 
@@ -95,4 +94,71 @@ The API exposes **46 endpoints** organized by functionality:
 - [.NET SDK 8.0](https://dotnet.microsoft.com/download) (for Part 2)
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/) (for Part 3)
 
----
+Set Up the Database
+Open SQL Server Management Studio (SSMS)
+Connect to your SQL Server instance
+Open the script file:
+
+text
+docs/Raceday_Database.sql
+Execute the script (press F5 or click Execute)
+
+Verify the database was created:
+sql
+USE raceday_database;
+SELECT * FROM users;
+SELECT * FROM events;
+SELECT * FROM enrolments;
+Expected Output:
+
+Database raceday_database created
+6 tables created
+Seed data inserted:
+4 Users (2 Organisers, 2 Participants)
+4 Events
+17 Categories
+6 Enrolments
+2 Results
+
+ Verify Database Setup
+Run these verification queries in SSMS:
+
+sql
+-- Check all tables have data
+SELECT 'users' AS TableName, COUNT(*) AS Count FROM users
+UNION ALL
+SELECT 'EventOrganisers', COUNT(*) FROM EventOrganisers
+UNION ALL
+SELECT 'events', COUNT(*) FROM events
+UNION ALL
+SELECT 'categories', COUNT(*) FROM categories
+UNION ALL
+SELECT 'enrolments', COUNT(*) FROM enrolments
+UNION ALL
+SELECT 'results', COUNT(*) FROM results;
+Expected Results:
+
+TableName	Count
+users	4
+EventOrganisers	2
+events	4
+categories	17
+enrolments	6
+results	2
+
+🔄 CI/CD Pipeline
+GitHub Actions Workflow
+The repository includes a GitHub Actions workflow that automatically:
+Validates repository structure
+Checks for /docs folder
+Verifies required files exist
+Validates file contents
+SQL script contains CREATE TABLE statements
+SQL script contains INSERT INTO statements (seed data)
+ERD is a valid JPEG image
+API Endpoint Plan is a valid PDF file
+Counts files
+Ensures minimum of 3 files in /docs folder
+
+Green Build Screenshot:
+
