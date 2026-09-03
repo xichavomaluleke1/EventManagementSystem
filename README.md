@@ -45,7 +45,7 @@ RaceDay/
 
 ## 🗄️ Database Schema
 
-The database consists of 7 core tables:
+The database consists of 6 core tables:
 
 | Table | Description |
 |-------|-------------|
@@ -161,4 +161,36 @@ Counts files
 Ensures minimum of 3 files in /docs folder
 
 Green Build Screenshot:                                                                                
-<img width="669" height="376" alt="image" src="https://github.com/user-attachments/assets/7df560bf-8085-4b7e-b4bb-159d791cd107" />
+<img width="669" height="376" alt="image" src="https://github.com/user-attachments/assets/7df560bf-8085-4b7e-b4bb-159d791cd107" /> 
+
+📹 Video Presentation
+Watch the full walkthrough of the RaceDay system: 
+
+📝 Part 1 Submission Checklist
+☑ GitHub repository created
+☑ /docs folder created
+☑ ERD diagram saved as ERD.jpeg
+☑ API endpoint plan saved as API ENDPOINT PLAN.pdf
+☑ SQL script saved as Raceday_Database.sql
+☑ README.md with setup instructions
+☑ 20+ meaningful commits made
+☑ CI/CD workflow configured
+☑ CI/CD green build screenshot included
+☑ YouTube video link included
+☑ GitHub repository link submitted on ARC
+
+📚 Technologies Used
+Technology	Purpose
+SQL Server	Database management
+Entity Framework Core	ORM for database access
+ASP.NET Core Web API	Backend API (Part 2)
+ASP.NET Core MVC	Frontend web application (Part 3)
+Azure Blob Storage	File/Image storage (Part 3)
+Docker	Containerization (Part 3)
+GitHub Actions	CI/CD automation
+Swagger/OpenAPI	API documentation
+Bootstrap	UI styling (Part 3)
+
+👨‍💻 Author
+Name: Xichavo Maluleke
+GitHub: https://github.com/xichavomaluleke1/EventManagementSystem.git
