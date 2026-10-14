@@ -13,6 +13,8 @@ builder.Services.AddSwaggerGen();
 // Register database classes
 builder.Services.AddScoped<auth_dbconnect>();
 builder.Services.AddScoped<users_dbconnect>();
+builder.Services.AddScoped<event_dbconnect>();
+builder.Services.AddScoped<category_dbconnect>();
 
 // Configure session services
 builder.Services.AddDistributedMemoryCache();
