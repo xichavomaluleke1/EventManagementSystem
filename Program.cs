@@ -10,8 +10,9 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-//Register database classes
+// Register database classes
 builder.Services.AddScoped<auth_dbconnect>();
+builder.Services.AddScoped<users_dbconnect>();
 
 // Configure session services
 builder.Services.AddDistributedMemoryCache();
@@ -43,7 +44,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-//enable session
+// enable session
 app.UseSession();
 
 app.UseAuthorization();

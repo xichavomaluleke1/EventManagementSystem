@@ -15,5 +15,6 @@
         public DateTime UpdatedAt { get; set; }
         public bool IsActive { get; set; }
         public DateTime? LastLoginDate { get; set; }
+        public string? ProfilePictureURL { get; internal set; }
     }
 }
