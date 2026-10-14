@@ -1,16 +1,30 @@
-//used to control how C# objects and enum values are converted to and from JSON
+using System.Reflection;
 using System.Text.Json.Serialization;
 using event_management_system.Database;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 
-// Register database classes
+// ============================================
+// Swagger with XML comments
+// ============================================
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+    {
+        Title = "RaceDay API",
+        Version = "v1",
+        Description = "Event management API for the South African running, walking, and cycling community. Supports Organiser and Participant roles with session-based authentication."
+    });
+
+    var xml_file = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xml_path = System.IO.Path.Combine(AppContext.BaseDirectory, xml_file);
+    options.IncludeXmlComments(xml_path);
+});
+
+// Database registrations
 builder.Services.AddScoped<auth_dbconnect>();
 builder.Services.AddScoped<users_dbconnect>();
 builder.Services.AddScoped<event_dbconnect>();
@@ -18,9 +32,8 @@ builder.Services.AddScoped<category_dbconnect>();
 builder.Services.AddScoped<enrolment_dbconnect>();
 builder.Services.AddScoped<result_dbconnect>();
 
-// Configure session services
+// Session
 builder.Services.AddDistributedMemoryCache();
-
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(30);
@@ -28,18 +41,15 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
-// Configure enum values to be represented as string in JSON
+// Enum → string in JSON
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
-        options.JsonSerializerOptions.Converters.Add(
-            new JsonStringEnumConverter()
-        );
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     });
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -47,12 +57,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
-// enable session
 app.UseSession();
-
 app.UseAuthorization();
-
 app.MapControllers();
 
 app.Run();

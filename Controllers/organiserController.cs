@@ -2,13 +2,14 @@
 using event_management_system.Database;
 
 namespace event_management_system.Controllers
-{//start of namespace
-
+{
+    /// <summary>
+    /// Organiser dashboard: event summaries, own events, per-event statistics.
+    /// </summary>
     [Route("api/organiser")]
     [ApiController]
     public class organiserController : ControllerBase
-    {//start of class
-
+    {
         private readonly event_dbconnect _event_db;
         private readonly enrolment_dbconnect _enrolment_db;
         private readonly result_dbconnect _result_db;
@@ -23,41 +24,33 @@ namespace event_management_system.Controllers
             _result_db = result_db;
         }
 
-        // ==================================================
-        // GET /api/organiser/dashboard
-        // Role: Organiser
-        // Summary of total events, enrolments, upcoming events
-        // ==================================================
+        /// <summary>Returns dashboard summary: totals and upcoming events.</summary>
+        /// <response code="200">Returns summary counts and upcoming list.</response>
+        /// <response code="401">Not authenticated.</response>
+        /// <response code="403">Not an organiser.</response>
         [HttpGet("dashboard")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public IActionResult Dashboard()
-        {//start of Dashboard()
-
+        {
             int? user_id = HttpContext.Session.GetInt32("UserID");
             string? role = HttpContext.Session.GetString("Role");
 
-            if (user_id == null)
-                return Unauthorized("Not authenticated.");
+            if (user_id == null) return Unauthorized("Not authenticated.");
+            if (role != "Organiser") return StatusCode(403, "Only organisers can access this dashboard.");
 
-            if (role != "Organiser")
-                return StatusCode(403, "Only organisers can access this dashboard.");
-
-            // fetch all events for this organiser
             var my_events = _event_db.get_events_by_organiser(user_id.Value);
 
-            // count total enrolments across all my events
             int total_enrolments = 0;
             int total_results = 0;
 
             foreach (var ev in my_events)
             {
-                var enrolments = _enrolment_db.get_enrolments_by_event(ev.EventID);
-                total_enrolments += enrolments.Count;
-
-                var results = _result_db.get_results_by_event(ev.EventID);
-                total_results += results.Count;
+                total_enrolments += _enrolment_db.get_enrolments_by_event(ev.EventID).Count;
+                total_results += _result_db.get_results_by_event(ev.EventID).Count;
             }
 
-            // upcoming events (from today onwards)
             var upcoming = my_events.Where(e => e.EventDate >= DateTime.Today).ToList();
 
             return Ok(new
@@ -75,80 +68,70 @@ namespace event_management_system.Controllers
                     eventType = e.EventType
                 })
             });
+        }
 
-        }//end of Dashboard()
-
-        // ==================================================
-        // GET /api/organiser/events
-        // Role: Organiser
-        // All events created by the current organiser
-        // ==================================================
+        /// <summary>Lists all events created by the current organiser.</summary>
+        /// <response code="200">Returns list of the organiser's events.</response>
+        /// <response code="401">Not authenticated.</response>
+        /// <response code="403">Not an organiser.</response>
         [HttpGet("events")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public IActionResult GetMyEvents()
-        {//start of GetMyEvents()
-
+        {
             int? user_id = HttpContext.Session.GetInt32("UserID");
             string? role = HttpContext.Session.GetString("Role");
 
-            if (user_id == null)
-                return Unauthorized("Not authenticated.");
-
-            if (role != "Organiser")
-                return StatusCode(403, "Only organisers can access this endpoint.");
+            if (user_id == null) return Unauthorized("Not authenticated.");
+            if (role != "Organiser") return StatusCode(403, "Only organisers can access this endpoint.");
 
             return Ok(_event_db.get_events_by_organiser(user_id.Value));
+        }
 
-        }//end of GetMyEvents()
-
-        // ==================================================
-        // GET /api/organiser/events/{id}
-        // Role: Organiser
-        // A specific event created by the current organiser
-        // ==================================================
+        /// <summary>Gets a single event created by the current organiser.</summary>
+        /// <param name="id">Event ID.</param>
+        /// <response code="200">Returns event details.</response>
+        /// <response code="401">Not authenticated.</response>
+        /// <response code="403">Not the event owner.</response>
+        /// <response code="404">Event not found.</response>
         [HttpGet("events/{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult GetMyEventById(int id)
-        {//start of GetMyEventById()
-
+        {
             int? user_id = HttpContext.Session.GetInt32("UserID");
             string? role = HttpContext.Session.GetString("Role");
 
-            if (user_id == null)
-                return Unauthorized("Not authenticated.");
-
-            if (role != "Organiser")
-                return StatusCode(403, "Only organisers can access this endpoint.");
+            if (user_id == null) return Unauthorized("Not authenticated.");
+            if (role != "Organiser") return StatusCode(403, "Only organisers can access this endpoint.");
 
             var ev = _event_db.get_event_by_id(id);
-            if (ev == null)
-                return NotFound("Event not found.");
-
-            if (ev.OrganiserID != user_id.Value)
-                return StatusCode(403, "Not your event.");
+            if (ev == null) return NotFound("Event not found.");
+            if (ev.OrganiserID != user_id.Value) return StatusCode(403, "Not your event.");
 
             return Ok(ev);
+        }
 
-        }//end of GetMyEventById()
-
-        // ==================================================
-        // GET /api/organiser/events/stats
-        // Role: Organiser
-        // Stats for all events created by the current organiser
-        // ==================================================
+        /// <summary>Returns enrolment and result stats for all the organiser's events.</summary>
+        /// <response code="200">Returns per-event stats.</response>
+        /// <response code="401">Not authenticated.</response>
+        /// <response code="403">Not an organiser.</response>
         [HttpGet("events/stats")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public IActionResult GetMyEventsStats()
-        {//start of GetMyEventsStats()
-
+        {
             int? user_id = HttpContext.Session.GetInt32("UserID");
             string? role = HttpContext.Session.GetString("Role");
 
-            if (user_id == null)
-                return Unauthorized("Not authenticated.");
-
-            if (role != "Organiser")
-                return StatusCode(403, "Only organisers can access this endpoint.");
+            if (user_id == null) return Unauthorized("Not authenticated.");
+            if (role != "Organiser") return StatusCode(403, "Only organisers can access this endpoint.");
 
             var my_events = _event_db.get_events_by_organiser(user_id.Value);
-
             var stats = new List<object>();
 
             foreach (var ev in my_events)
@@ -173,9 +156,6 @@ namespace event_management_system.Controllers
             }
 
             return Ok(stats);
-
-        }//end of GetMyEventsStats()
-
-    }//end of class
-
-}//end of namespace
+        }
+    }
+}

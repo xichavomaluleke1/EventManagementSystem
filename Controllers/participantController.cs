@@ -2,13 +2,14 @@
 using event_management_system.Database;
 
 namespace event_management_system.Controllers
-{//start of namespace
-
+{
+    /// <summary>
+    /// Participant dashboard: enrolments, results, and upcoming/past breakdowns.
+    /// </summary>
     [Route("api/participant")]
     [ApiController]
     public class participantController : ControllerBase
-    {//start of class
-
+    {
         private readonly enrolment_dbconnect _enrolment_db;
         private readonly result_dbconnect _result_db;
         private readonly event_dbconnect _event_db;
@@ -23,31 +24,25 @@ namespace event_management_system.Controllers
             _event_db = event_db;
         }
 
-        // ==================================================
-        // GET /api/participant/dashboard
-        // Role: Participant
-        // Summary: upcoming enrolments, past enrolments, results count
-        // ==================================================
+        /// <summary>Returns dashboard summary with upcoming and past enrolments.</summary>
+        /// <response code="200">Returns summary and enrolment breakdown.</response>
+        /// <response code="401">Not authenticated.</response>
+        /// <response code="403">Not a participant.</response>
         [HttpGet("dashboard")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public IActionResult Dashboard()
-        {//start of Dashboard()
-
+        {
             int? user_id = HttpContext.Session.GetInt32("UserID");
             string? role = HttpContext.Session.GetString("Role");
 
-            if (user_id == null)
-                return Unauthorized("Not authenticated.");
+            if (user_id == null) return Unauthorized("Not authenticated.");
+            if (role != "Participant") return StatusCode(403, "Only participants can access this dashboard.");
 
-            if (role != "Participant")
-                return StatusCode(403, "Only participants can access this dashboard.");
-
-            // fetch this participant's enrolments
             var my_enrolments = _enrolment_db.get_enrolments_by_participant(user_id.Value);
-
-            // fetch this participant's results
             var my_results = _result_db.get_results_by_participant(user_id.Value);
 
-            // classify enrolments into upcoming / past based on event date
             var upcoming = new List<object>();
             var past = new List<object>();
 
@@ -68,10 +63,8 @@ namespace event_management_system.Controllers
                     paymentStatus = enr.PaymentStatus
                 };
 
-                if (ev.EventDate >= DateTime.Today)
-                    upcoming.Add(item);
-                else
-                    past.Add(item);
+                if (ev.EventDate >= DateTime.Today) upcoming.Add(item);
+                else past.Add(item);
             }
 
             return Ok(new
@@ -83,31 +76,25 @@ namespace event_management_system.Controllers
                 upcoming_enrolments = upcoming,
                 past_enrolments = past
             });
+        }
 
-        }//end of Dashboard()
-
-        // ==================================================
-        // GET /api/participant/enrolments
-        // Role: Participant
-        // All enrolments for the current participant with event details
-        // ==================================================
+        /// <summary>Lists all enrolments for the current participant with event details.</summary>
+        /// <response code="200">Returns enriched enrolments.</response>
+        /// <response code="401">Not authenticated.</response>
+        /// <response code="403">Not a participant.</response>
         [HttpGet("enrolments")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public IActionResult MyEnrolments()
-        {//start of MyEnrolments()
-
+        {
             int? user_id = HttpContext.Session.GetInt32("UserID");
             string? role = HttpContext.Session.GetString("Role");
 
-            if (user_id == null)
-                return Unauthorized("Not authenticated.");
+            if (user_id == null) return Unauthorized("Not authenticated.");
+            if (role != "Participant") return StatusCode(403, "Only participants can access this endpoint.");
 
-            if (role != "Participant")
-                return StatusCode(403, "Only participants can access this endpoint.");
-
-            // fetch enrolments
             var my_enrolments = _enrolment_db.get_enrolments_by_participant(user_id.Value);
-
-            // enrich each enrolment with event details
             var enriched = new List<object>();
 
             foreach (var enr in my_enrolments)
@@ -134,31 +121,25 @@ namespace event_management_system.Controllers
             }
 
             return Ok(enriched);
+        }
 
-        }//end of MyEnrolments()
-
-        // ==================================================
-        // GET /api/participant/results
-        // Role: Participant
-        // All results for the current participant with event details
-        // ==================================================
+        /// <summary>Lists all results for the current participant with event details.</summary>
+        /// <response code="200">Returns enriched results.</response>
+        /// <response code="401">Not authenticated.</response>
+        /// <response code="403">Not a participant.</response>
         [HttpGet("results")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public IActionResult MyResults()
-        {//start of MyResults()
-
+        {
             int? user_id = HttpContext.Session.GetInt32("UserID");
             string? role = HttpContext.Session.GetString("Role");
 
-            if (user_id == null)
-                return Unauthorized("Not authenticated.");
+            if (user_id == null) return Unauthorized("Not authenticated.");
+            if (role != "Participant") return StatusCode(403, "Only participants can access this endpoint.");
 
-            if (role != "Participant")
-                return StatusCode(403, "Only participants can access this endpoint.");
-
-            // fetch results
             var my_results = _result_db.get_results_by_participant(user_id.Value);
-
-            // enrich with event details via the enrolment
             var enriched = new List<object>();
 
             foreach (var res in my_results)
@@ -188,9 +169,6 @@ namespace event_management_system.Controllers
             }
 
             return Ok(enriched);
-
-        }//end of MyResults()
-
-    }//end of class
-
-}//end of namespace
+        }
+    }
+}
