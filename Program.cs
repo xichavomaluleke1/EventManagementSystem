@@ -16,6 +16,7 @@ builder.Services.AddScoped<users_dbconnect>();
 builder.Services.AddScoped<event_dbconnect>();
 builder.Services.AddScoped<category_dbconnect>();
 builder.Services.AddScoped<enrolment_dbconnect>();
+builder.Services.AddScoped<result_dbconnect>();
 
 // Configure session services
 builder.Services.AddDistributedMemoryCache();
