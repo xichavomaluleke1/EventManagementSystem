@@ -5,7 +5,7 @@ using event_management_system.Models;
 namespace event_management_system.Controllers
 {//start of namespace
 
-    [Route("api/auth")]
+    [Route("api/authenticator")]
     [ApiController]
     public class authController : ControllerBase
     {//start of class
