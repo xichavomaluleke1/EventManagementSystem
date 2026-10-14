@@ -1,5 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using event_management_system.Database;
+﻿using event_management_system.Database;
+using event_management_system.Database.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 
 namespace event_management_system.Controllers
 {
@@ -16,9 +17,9 @@ namespace event_management_system.Controllers
         /// <summary>Gender options for profile updates.</summary>
         public enum user_genders { Male, Female, Other }
 
-        private readonly users_dbconnect _users_db;
+        private readonly Iusers_dbconnect _users_db;
 
-        public usersController(users_dbconnect users_db)
+        public usersController(Iusers_dbconnect users_db)
         {
             _users_db = users_db;
         }

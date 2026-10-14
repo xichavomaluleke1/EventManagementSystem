@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using event_management_system.Database;
+﻿using event_management_system.Database;
+using event_management_system.Database.Interfaces;
 using event_management_system.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace event_management_system.Controllers
 {
@@ -17,10 +18,10 @@ namespace event_management_system.Controllers
         /// <summary>Payment status options.</summary>
         public enum payment_statuses { Pending, Paid, Refunded, Cancelled }
 
-        private readonly enrolment_dbconnect _enrolment_db;
-        private readonly event_dbconnect _event_db;
+        private readonly Ienrolment_dbconnect _enrolment_db;
+        private readonly Ievent_dbconnect _event_db;
 
-        public enrolmentController(enrolment_dbconnect enrolment_db, event_dbconnect event_db)
+        public enrolmentController(Ienrolment_dbconnect enrolment_db, Ievent_dbconnect event_db)
         {
             _enrolment_db = enrolment_db;
             _event_db = event_db;

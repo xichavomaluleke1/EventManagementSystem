@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
 	<PropertyGroup>
 		<TargetFramework>net8.0</TargetFramework>
@@ -7,6 +7,21 @@
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<NoWarn>$(NoWarn);1591</NoWarn>
 	</PropertyGroup>
+
+	<ItemGroup>
+	  <Compile Remove="event_management_system.Tests\bin\**" />
+	  <Compile Remove="event_management_system.Tests\obj\**" />
+	  <Content Remove="event_management_system.Tests\bin\**" />
+	  <Content Remove="event_management_system.Tests\obj\**" />
+	  <EmbeddedResource Remove="event_management_system.Tests\bin\**" />
+	  <EmbeddedResource Remove="event_management_system.Tests\obj\**" />
+	  <None Remove="event_management_system.Tests\bin\**" />
+	  <None Remove="event_management_system.Tests\obj\**" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Content Include="..\..\..\OneDrive\Desktop\tests-passing.png" Link="docs\tests-passing.png" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />

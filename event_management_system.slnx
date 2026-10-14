@@ -1,3 +1,4 @@
 <Solution>
+  <Project Path="../event_management_system.Tests/event_management_system.Tests.csproj" Id="cda4a105-9e9a-4e13-9341-721e209e291d" />
   <Project Path="event_management_system.csproj" />
 </Solution>

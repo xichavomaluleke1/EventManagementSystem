@@ -1,6 +1,7 @@
+using event_management_system.Database;
+using event_management_system.Database.Interfaces;
 using System.Reflection;
 using System.Text.Json.Serialization;
-using event_management_system.Database;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,12 +26,12 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 // Database registrations
-builder.Services.AddScoped<auth_dbconnect>();
-builder.Services.AddScoped<users_dbconnect>();
-builder.Services.AddScoped<event_dbconnect>();
-builder.Services.AddScoped<category_dbconnect>();
-builder.Services.AddScoped<enrolment_dbconnect>();
-builder.Services.AddScoped<result_dbconnect>();
+builder.Services.AddScoped<Iauth_dbconnect, auth_dbconnect>();
+builder.Services.AddScoped<Iusers_dbconnect, users_dbconnect>();
+builder.Services.AddScoped<Ievent_dbconnect, event_dbconnect>();
+builder.Services.AddScoped<Icategory_dbconnect, category_dbconnect>();
+builder.Services.AddScoped<Ienrolment_dbconnect, enrolment_dbconnect>();
+builder.Services.AddScoped<Iresult_dbconnect, result_dbconnect>();
 
 // Session
 builder.Services.AddDistributedMemoryCache();
@@ -62,3 +63,5 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+public partial class Program { }

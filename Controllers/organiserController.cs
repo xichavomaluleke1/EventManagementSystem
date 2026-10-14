@@ -1,5 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using event_management_system.Database;
+﻿using event_management_system.Database;
+using event_management_system.Database.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 
 namespace event_management_system.Controllers
 {
@@ -10,14 +11,14 @@ namespace event_management_system.Controllers
     [ApiController]
     public class organiserController : ControllerBase
     {
-        private readonly event_dbconnect _event_db;
-        private readonly enrolment_dbconnect _enrolment_db;
-        private readonly result_dbconnect _result_db;
+        private readonly Ievent_dbconnect _event_db;
+        private readonly Ienrolment_dbconnect _enrolment_db;
+        private readonly Iresult_dbconnect _result_db;
 
         public organiserController(
-            event_dbconnect event_db,
-            enrolment_dbconnect enrolment_db,
-            result_dbconnect result_db)
+            Ievent_dbconnect event_db,
+            Ienrolment_dbconnect enrolment_db,
+            Iresult_dbconnect result_db)
         {
             _event_db = event_db;
             _enrolment_db = enrolment_db;

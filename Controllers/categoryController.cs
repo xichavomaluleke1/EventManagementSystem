@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using event_management_system.Database;
+﻿using event_management_system.Database;
+using event_management_system.Database.Interfaces;
 using event_management_system.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace event_management_system.Controllers
 {
@@ -11,10 +12,10 @@ namespace event_management_system.Controllers
     [ApiController]
     public class categoryController : ControllerBase
     {
-        private readonly category_dbconnect _category_db;
-        private readonly event_dbconnect _event_db;
+        private readonly Icategory_dbconnect _category_db;
+        private readonly Ievent_dbconnect _event_db;
 
-        public categoryController(category_dbconnect category_db, event_dbconnect event_db)
+        public categoryController(Icategory_dbconnect category_db, Ievent_dbconnect event_db)
         {
             _category_db = category_db;
             _event_db = event_db;

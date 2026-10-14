@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using event_management_system.Database;
+﻿using event_management_system.Database;
+using event_management_system.Database.Interfaces;
 using event_management_system.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace event_management_system.Controllers
 {
@@ -22,9 +23,9 @@ namespace event_management_system.Controllers
         /// <summary>Gender options for registration.</summary>
         public enum genders { Male, Female, Other }
 
-        private readonly auth_dbconnect _auth_db;
+        private readonly Iauth_dbconnect _auth_db;
 
-        public authController(auth_dbconnect auth_db)
+        public authController(Iauth_dbconnect auth_db)
         {
             _auth_db = auth_db;
         }

@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using event_management_system.Database;
+﻿using event_management_system.Database;
+using event_management_system.Database.Interfaces;
 using event_management_system.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace event_management_system.Controllers
 {
@@ -17,10 +18,10 @@ namespace event_management_system.Controllers
         /// <summary>Event type options.</summary>
         public enum event_types { Run, Walk, Cycle }
 
-        private readonly event_dbconnect _event_db;
-        private readonly category_dbconnect _category_db;
+        private readonly Ievent_dbconnect _event_db;
+        private readonly Icategory_dbconnect _category_db;
 
-        public eventController(event_dbconnect event_db, category_dbconnect category_db)
+        public eventController(Ievent_dbconnect event_db, Icategory_dbconnect category_db)
         {
             _event_db = event_db;
             _category_db = category_db;
