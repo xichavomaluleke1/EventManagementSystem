@@ -21,8 +21,5 @@
     <None Remove="event_management_system.Tests\**\*" />
     <EmbeddedResource Remove="event_management_system.Tests\**\*" />
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="..\..\..\OneDrive\Desktop\swagger-screenshot.png" Link="docs\swagger-screenshot.png" />
-  </ItemGroup>
 
 </Project>
