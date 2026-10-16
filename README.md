@@ -298,7 +298,7 @@ Walkthrough of the ERD, API endpoint plan, and SQL script demonstrated live in S
 
 ### Part 2 - API Implementation & Testing
 
-*Video coming soon — will demonstrate the running API, Swagger, authentication, unit tests, and code structure.*
+[Part 2 Video](https://youtu.be/h_wIFnYOs64)
 ---
 
 ## 📝 Part 1 Submission Checklist
