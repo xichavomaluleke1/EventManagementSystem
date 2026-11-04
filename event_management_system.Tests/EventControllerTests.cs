@@ -1,7 +1,7 @@
 ﻿using event_management_system.Controllers;
 using event_management_system.Database.Interfaces;
-using Microsoft.AspNetCore.Http.Features;
 using event_management_system.Models;
+using event_management_system.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
@@ -18,7 +18,10 @@ namespace event_management_system.Tests
         private eventController create_controller(Ievent_dbconnect event_db, string? role = null, int? user_id = null)
         {
             var category_mock = new Mock<Icategory_dbconnect>();
-            var controller = new eventController(event_db, category_mock.Object);
+            var blob_mock = new Mock<Iblob_storage_service>();
+
+            // 👈 3 arguments passed now
+            var controller = new eventController(event_db, category_mock.Object, blob_mock.Object);
 
             var http_context = new DefaultHttpContext();
             http_context.Features.Set<ISessionFeature>(new FakeSessionFeature());
