@@ -1,5 +1,6 @@
 ﻿using event_management_system.Database;
 using event_management_system.Database.Interfaces;
+using event_management_system.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace event_management_system.Controllers
@@ -7,9 +8,6 @@ namespace event_management_system.Controllers
     /// <summary>
     /// Manages the current user's profile: view, update, profile picture, and password change.
     /// </summary>
-    /// <remarks>
-    /// All endpoints require an active session. Users can only view or modify their own profile.
-    /// </remarks>
     [Route("api/users")]
     [ApiController]
     public class usersController : ControllerBase
@@ -18,18 +16,17 @@ namespace event_management_system.Controllers
         public enum user_genders { Male, Female, Other }
 
         private readonly Iusers_dbconnect _users_db;
+        private readonly Iblob_storage_service _blob_service;
 
-        public usersController(Iusers_dbconnect users_db)
+        public usersController(
+            Iusers_dbconnect users_db,
+            Iblob_storage_service blob_service)
         {
             _users_db = users_db;
+            _blob_service = blob_service;
         }
 
-        /// <summary>
-        /// Gets the current authenticated user's profile.
-        /// </summary>
-        /// <response code="200">Profile returned (password hash hidden).</response>
-        /// <response code="401">Not authenticated.</response>
-        /// <response code="404">User not found.</response>
+        /// <summary>Gets the current authenticated user's profile.</summary>
         [HttpGet("profile")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -46,17 +43,7 @@ namespace event_management_system.Controllers
             return Ok(user);
         }
 
-        /// <summary>
-        /// Updates the current user's profile information.
-        /// </summary>
-        /// <param name="firstname">Updated first name.</param>
-        /// <param name="surname">Updated last name.</param>
-        /// <param name="phone_number">Updated phone number (optional).</param>
-        /// <param name="date_of_birth">Updated date of birth (optional).</param>
-        /// <param name="gender">Updated gender.</param>
-        /// <response code="200">Profile updated.</response>
-        /// <response code="401">Not authenticated.</response>
-        /// <response code="404">User not found.</response>
+        /// <summary>Updates the current user's profile information.</summary>
         [HttpPut("profile")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -80,12 +67,7 @@ namespace event_management_system.Controllers
             return Ok(result);
         }
 
-        /// <summary>
-        /// Returns the URL of the current user's profile picture.
-        /// </summary>
-        /// <response code="200">Returns the URL.</response>
-        /// <response code="401">Not authenticated.</response>
-        /// <response code="404">No profile picture set.</response>
+        /// <summary>Returns the URL of the current user's profile picture.</summary>
         [HttpGet("profile-picture")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -101,39 +83,42 @@ namespace event_management_system.Controllers
             return Ok(new { profile_picture_url = url });
         }
 
-        /// <summary>
-        /// Saves a URL for the current user's profile picture.
-        /// </summary>
-        /// <param name="image_url">URL of the profile picture.</param>
-        /// <response code="200">Profile picture updated.</response>
-        /// <response code="400">Invalid URL.</response>
-        /// <response code="401">Not authenticated.</response>
+        /// <summary>Uploads a profile picture for the current user to Azure Blob Storage.</summary>
+        /// <param name="profile_picture">The image file (multipart/form-data).</param>
         [HttpPost("profile-picture")]
+        [Consumes("multipart/form-data")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public IActionResult UploadProfilePicture(string image_url)
+        public async Task<IActionResult> UploadProfilePicture(IFormFile profile_picture)
         {
             int? user_id = HttpContext.Session.GetInt32("UserID");
             if (user_id == null) return Unauthorized("Not authenticated.");
 
-            if (string.IsNullOrWhiteSpace(image_url))
-                return BadRequest("Invalid file or URL.");
+            if (profile_picture == null || profile_picture.Length == 0)
+                return BadRequest("No file provided.");
 
-            string result = _users_db.update_profile_picture(user_id.Value, image_url);
-            if (result.Contains("Database Error")) return StatusCode(500, result);
-            return Ok(result);
+            try
+            {
+                string url = await _blob_service.upload_image_async(profile_picture, "profiles");
+                string result = _users_db.update_profile_picture(user_id.Value, url);
+
+                if (result.Contains("Database Error"))
+                    return StatusCode(500, result);
+
+                return Ok(new
+                {
+                    message = "Profile picture updated successfully.",
+                    profile_picture_url = url
+                });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
-        /// <summary>
-        /// Changes the current user's password.
-        /// </summary>
-        /// <param name="current_password">Current password for verification.</param>
-        /// <param name="new_password">New password (hashed before storage).</param>
-        /// <response code="200">Password changed.</response>
-        /// <response code="400">Current password incorrect.</response>
-        /// <response code="401">Not authenticated.</response>
-        /// <response code="404">User not found.</response>
+        /// <summary>Changes the current user's password.</summary>
         [HttpPut("change-password")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
