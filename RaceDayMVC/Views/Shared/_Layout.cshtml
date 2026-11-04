@@ -19,13 +19,10 @@
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
 
-                    <!-- Left Side Menu -->
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
-
-                        <!-- Role-Specific Links -->
                         @if (Context.Session.GetString("Role") == "Organiser")
                         {
                             <li class="nav-item">
@@ -43,7 +40,6 @@
                         }
                     </ul>
 
-                    <!-- Right Side Menu (Auth) -->
                     <ul class="navbar-nav">
                         @if (Context.Session.GetInt32("UserID") != null)
                         {
@@ -71,15 +67,17 @@
         </nav>
     </header>
 
+    <!-- Standard container. The body's margin-bottom: 60px ensures no overlap -->
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted mt-5 py-3">
-        <div class="container text-center">
-            &copy; 2026 - 🏃 RaceDay - All Rights Reserved
+    <!-- Footer exactly matching the classic template style -->
+    <footer class="border-top footer text-muted bg-light">
+        <div class="container">
+            &copy; 2026 - RaceDay - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
 
