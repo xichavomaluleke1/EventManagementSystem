@@ -21,5 +21,8 @@ namespace event_management_system.Database.Interfaces
         string delete_event(int event_id);
 
         string publish_event(int event_id, bool is_published);
+
+        //update banner URL
+        string update_banner_url(int event_id, string banner_url);
     }
 }

@@ -247,6 +247,36 @@ namespace event_management_system.Database
         }
 
         // ==================================================
+        // UPDATE banner URL
+        // ==================================================
+        public string update_banner_url(int event_id, string banner_url)
+        {
+            string message = "";
+            try
+            {
+                using (SqlConnection connect = new SqlConnection(connection_string))
+                {
+                    connect.Open();
+                    string query = @"update events 
+                                     set BannerImage = @BannerUrl, 
+                                         UpdatedAt = GETDATE() 
+                                     where EventID = @EventID";
+                    using (SqlCommand cmd = new SqlCommand(query, connect))
+                    {
+                        cmd.Parameters.AddWithValue("@EventID", event_id);
+                        cmd.Parameters.AddWithValue("@BannerUrl", banner_url);
+
+                        int rows = cmd.ExecuteNonQuery();
+                        message = rows > 0 ? "Banner updated successfully." : "Event not found.";
+                    }
+                    connect.Close();
+                }
+            }
+            catch (Exception error) { message = "Database Error: " + error.Message; }
+            return message;
+        }
+
+        // ==================================================
         // MAPPER
         // ==================================================
         private Events map_event(SqlDataReader reader)
