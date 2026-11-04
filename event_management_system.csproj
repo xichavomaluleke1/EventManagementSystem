@@ -23,4 +23,12 @@
     <EmbeddedResource Remove="event_management_system.Tests\**\*" />
   </ItemGroup>
 
+  <!-- Exclude the MVC project folder from this project's compilation -->
+  <ItemGroup>
+    <Compile Remove="RaceDayMVC\**\*" />
+    <Content Remove="RaceDayMVC\**\*" />
+    <None Remove="RaceDayMVC\**\*" />
+    <EmbeddedResource Remove="RaceDayMVC\**\*" />
+  </ItemGroup>
+
 </Project>
