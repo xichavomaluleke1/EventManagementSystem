@@ -1,0 +1,93 @@
+﻿@{
+    ViewData["Title"] = "Organiser Dashboard";
+    var data = ViewBag.DashboardData as System.Text.Json.JsonElement?;
+}
+
+<div class="container mt-4">
+    <h1 class="display-5 text-success fw-bold">Organiser Dashboard</h1>
+    <p class="lead text-muted">Welcome back, @Context.Session.GetString("FirstName")!</p>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger">@ViewBag.Error</div>
+    }
+    else if (data != null)
+    {
+        <!-- Stats Cards -->
+        <div class="row mt-4">
+            <div class="col-md-4 mb-3">
+                <div class="card shadow-sm border-0 bg-success text-white">
+                    <div class="card-body text-center py-4">
+                        <h1 class="display-4 fw-bold">@data.Value.GetProperty("total_events")</h1>
+                        <h5 class="mb-0">Total Events Created</h5>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card shadow-sm border-0 bg-primary text-white">
+                    <div class="card-body text-center py-4">
+                        <h1 class="display-4 fw-bold">@data.Value.GetProperty("total_enrolments")</h1>
+                        <h5 class="mb-0">Total Enrolments</h5>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card shadow-sm border-0 bg-dark text-white">
+                    <div class="card-body text-center py-4">
+                        <h1 class="display-4 fw-bold">@data.Value.GetProperty("total_results")</h1>
+                        <h5 class="mb-0">Results Recorded</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-5">
+            <h3 class="fw-bold">Quick Actions</h3>
+            <hr />
+            <a asp-action="Create" class="btn btn-success btn-lg mb-4">➕ Create New Event</a>
+
+            <!-- List of Events -->
+            @if (data.Value.GetProperty("upcoming_list").GetArrayLength() > 0)
+            {
+                <h4 class="fw-bold mt-4">Your Upcoming Events</h4>
+                <div class="list-group shadow-sm mt-3">
+                    @foreach (var ev in data.Value.GetProperty("upcoming_list").EnumerateArray())
+                    {
+                        <div class="list-group-item d-flex justify-content-between align-items-center py-3">
+                            <div>
+                                <h5 class="mb-1 text-success fw-bold">@ev.GetProperty("eventName")</h5>
+                                <small class="text-muted">
+                                    📅 @ev.GetProperty("eventDate").GetString() |
+                                    📍 @ev.GetProperty("location") |
+                                    🏃 @ev.GetProperty("eventType")
+                                </small>
+                            </div>
+                            <div>
+                                <a asp-action="Categories" asp-route-id="@ev.GetProperty("eventID")" class="btn btn-sm btn-outline-success me-2">
+                                    Manage Categories
+                                </a>
+                                <a asp-action="Enrolments" asp-route-id="@ev.GetProperty("eventID")" class="btn btn-sm btn-outline-primary">
+                                    View Enrolments
+                                </a>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info mt-4">
+                    You have no upcoming events. Click "Create New Event" to get started.
+                </div>
+            }
+        </div>
+    }
+</div>

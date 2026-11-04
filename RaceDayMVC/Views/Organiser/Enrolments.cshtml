@@ -1,0 +1,84 @@
+﻿@model RaceDayMVC.Models.EventEnrolmentsViewModel
+@{
+    ViewData["Title"] = $"Enrolments - {Model.EventName}";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="text-success fw-bold">Enrolments for @Model.EventName</h2>
+        <a asp-action="Dashboard" class="btn btn-outline-secondary btn-sm">← Back to Dashboard</a>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="card shadow border-0">
+        <div class="card-body p-0">
+            <table class="table table-striped table-hover mb-0">
+                <thead class="bg-dark text-white">
+                    <tr>
+                        <th>Participant</th>
+                        <th>Category</th>
+                        <th>Status</th>
+                        <th>Payment</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Enrolments == null || !Model.Enrolments.Any())
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center py-5 text-muted">
+                                <h5>No one has enrolled in this event yet.</h5>
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var enr in Model.Enrolments)
+                        {
+                            <tr>
+                                <td class="fw-bold">@enr.ParticipantName</td>
+                                <td>@enr.CategoryName</td>
+                                <td>
+                                    @if (enr.Status == "Confirmed" || enr.Status == "Completed")
+                                    {
+                                        <span class="badge bg-success">@enr.Status</span>
+                                    }
+                                    else if (enr.Status == "Pending")
+                                    {
+                                        <span class="badge bg-warning text-dark">@enr.Status</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">@enr.Status</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (enr.PaymentStatus == "Paid")
+                                    {
+                                        <span class="badge bg-success">@enr.PaymentStatus</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">@enr.PaymentStatus</span>
+                                    }
+                                </td>
+                                <td class="text-end">
+                                    <a asp-action="CaptureResult" asp-route-enrolmentId="@enr.EnrolmentID" asp-route-eventId="@Model.EventID" class="btn btn-sm btn-primary">
+                                        Capture Result
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

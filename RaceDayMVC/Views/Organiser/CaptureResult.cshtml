@@ -1,0 +1,61 @@
+﻿@model RaceDayMVC.Models.ResultEntryViewModel
+@{
+    ViewData["Title"] = "Capture Result";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow border-0">
+                <div class="card-header bg-dark text-white">
+                    <h4 class="mb-0">Capture Race Result</h4>
+                </div>
+                <div class="card-body">
+                    @if (ViewBag.Error != null)
+                    {
+                        <div class="alert alert-danger">@ViewBag.Error</div>
+                    }
+
+                    <form asp-action="CaptureResult" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                        <input type="hidden" asp-for="EventId" />
+                        <input type="hidden" asp-for="EnrolmentId" />
+
+                        <div class="mb-4">
+                            <label asp-for="FinishTime" class="form-label fw-bold">Finish Time (HH:mm:ss)</label>
+                            <input asp-for="FinishTime" class="form-control form-control-lg" placeholder="04:30:00" required />
+                            <span asp-validation-for="FinishTime" class="text-danger"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <label asp-for="FinishPosition" class="form-label fw-bold">Position</label>
+                                <input asp-for="FinishPosition" class="form-control" type="number" placeholder="e.g. 47" />
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <label asp-for="TotalParticipants" class="form-label fw-bold">Total Finishers</label>
+                                <input asp-for="TotalParticipants" class="form-control" type="number" placeholder="e.g. 312" />
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Status" class="form-label fw-bold">Result Status</label>
+                            <select asp-for="Status" class="form-select">
+                                <option value="Confirmed">Confirmed (Finished)</option>
+                                <option value="DNF">DNF (Did Not Finish)</option>
+                                <option value="DNS">DNS (Did Not Start)</option>
+                                <option value="Disqualified">Disqualified</option>
+                            </select>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success btn-lg">Save Result</button>
+                            <a asp-action="Enrolments" asp-route-id="@Model.EventId" class="btn btn-outline-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
