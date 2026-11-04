@@ -2,6 +2,8 @@ using event_management_system.Database;
 using event_management_system.Database.Interfaces;
 using System.Reflection;
 using System.Text.Json.Serialization;
+using event_management_system.Services;
+using event_management_system.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,6 +34,8 @@ builder.Services.AddScoped<Ievent_dbconnect, event_dbconnect>();
 builder.Services.AddScoped<Icategory_dbconnect, category_dbconnect>();
 builder.Services.AddScoped<Ienrolment_dbconnect, enrolment_dbconnect>();
 builder.Services.AddScoped<Iresult_dbconnect, result_dbconnect>();
+
+builder.Services.AddScoped<Iblob_storage_service, blob_storage_service>();
 
 // Session
 builder.Services.AddDistributedMemoryCache();
