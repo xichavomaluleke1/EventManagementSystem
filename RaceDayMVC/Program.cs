@@ -1,9 +1,9 @@
 var builder = WebApplication.CreateBuilder(args);
 
-//Add MVC
+// Add MVC
 builder.Services.AddControllersWithViews();
 
-//Add Session (to store our auth state)
+// Add Session (to store our MVC auth state)
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
@@ -12,14 +12,26 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
-//Configure HttpClient to point to our API
+// Register a singleton CookieContainer to hold the API session cookies
+builder.Services.AddSingleton<System.Net.CookieContainer>();
+
+// Configure HttpClient to point to our API AND use the CookieContainer
 builder.Services.AddHttpClient("RaceDayApi", client =>
 {
     // Use your API's HTTPS port. Check your API's launchSettings.json or console for the exact port.
     client.BaseAddress = new Uri("https://localhost:7284/");
+})
+.ConfigurePrimaryHttpMessageHandler(sp =>
+{
+    var cookieContainer = sp.GetRequiredService<System.Net.CookieContainer>();
+    return new HttpClientHandler
+    {
+        CookieContainer = cookieContainer,
+        UseCookies = true
+    };
 });
 
-//Register the API service wrapper
+// Register the API service wrapper
 builder.Services.AddScoped<RaceDayMVC.Services.IApiService, RaceDayMVC.Services.ApiService>();
 builder.Services.AddHttpContextAccessor();
 

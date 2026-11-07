@@ -214,8 +214,15 @@ namespace RaceDayMVC.Controllers
                                 ParticipantID = enr.GetProperty("participantID").GetInt32(),
                                 Status = enr.GetProperty("status").GetString() ?? "",
                                 PaymentStatus = enr.GetProperty("paymentStatus").GetString() ?? "",
-                                ParticipantName = $"Participant #{enr.GetProperty("participantID").GetInt32()}",
-                                CategoryName = $"Category #{enr.GetProperty("categoryID").GetInt32()}"
+
+                                // 🆕 Safely read the new joined names from the API
+                                ParticipantName = enr.TryGetProperty("participantName", out var pName) && pName.ValueKind != JsonValueKind.Null
+                                    ? pName.GetString() ?? $"Participant #{enr.GetProperty("participantID").GetInt32()}"
+                                    : $"Participant #{enr.GetProperty("participantID").GetInt32()}",
+
+                                CategoryName = enr.TryGetProperty("categoryName", out var cName) && cName.ValueKind != JsonValueKind.Null
+                                    ? cName.GetString() ?? $"Category #{enr.GetProperty("categoryID").GetInt32()}"
+                                    : $"Category #{enr.GetProperty("categoryID").GetInt32()}"
                             });
                         }
                     }
