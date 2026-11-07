@@ -1,8 +1,59 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model IEnumerable<RaceDayMVC.Models.EventViewModel>
+@{
+    ViewData["Title"] = "Upcoming Events";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="display-5 text-success fw-bold">Upcoming Events</h1>
+        @if (Context.Session.GetInt32("UserID") == null)
+        {
+            <a asp-controller="Auth" asp-action="Register" class="btn btn-outline-success btn-lg">Sign Up to Enrol</a>
+        }
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info text-center py-5">
+            <h4>No upcoming events found.</h4>
+            <p>Check back soon!</p>
+        </div>
+    }
+    else
+    {
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            @foreach (var ev in Model)
+            {
+                <div class="col">
+                    <div class="card h-100 shadow-sm border-0 event-card">
+                        <!-- Banner Image -->
+                        @if (!string.IsNullOrEmpty(ev.BannerImage))
+                        {
+                            <img src="@ev.BannerImage" class="card-img-top" alt="@ev.EventName" style="height: 200px; object-fit: cover;">
+                        }
+                        else
+                        {
+                            <div class="card-img-top bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 200px;">
+                                <span class="fs-4">🏃 No Image</span>
+                            </div>
+                        }
+
+                        <div class="card-body">
+                            <h5 class="card-title fw-bold">@ev.EventName</h5>
+                            <p class="card-text text-muted small">
+                                📍 @ev.Location <br />
+                                📅 @ev.EventDate.ToString("dd MMM yyyy") <br />
+                                🏃 @ev.Distance km - @ev.EventType
+                            </p>
+                        </div>
+
+                        <div class="card-footer bg-white border-top-0 d-flex justify-content-between align-items-center pb-3">
+                            <span class="text-success fw-bold">R @ev.EntryFee</span>
+                            <a asp-action="Details" asp-route-id="@ev.EventID" class="btn btn-success">View Details</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
 </div>

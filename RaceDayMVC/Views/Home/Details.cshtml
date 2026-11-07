@@ -1,0 +1,138 @@
+﻿@model RaceDayMVC.Models.EventViewModel
+@{
+    ViewData["Title"] = Model.EventName;
+}
+
+<div class="container mt-4">
+    <!-- Alerts (Success / Error messages from Enrolment) -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show shadow-sm">
+            ✅ @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show shadow-sm">
+            ⚠️ @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Hero Banner (From Azure Blob) -->
+    @if (!string.IsNullOrEmpty(Model.BannerImage))
+    {
+        <div class="mb-4 rounded overflow-hidden shadow-sm" style="max-height: 400px;">
+            <img src="@Model.BannerImage" class="w-100" style="object-fit: cover; max-height: 400px;" alt="@Model.EventName" />
+        </div>
+    }
+    else
+    {
+        <div class="mb-4 rounded bg-secondary text-white d-flex align-items-center justify-content-center shadow-sm" style="height: 250px;">
+            <h2>🏃 @Model.EventName</h2>
+        </div>
+    }
+
+    <div class="row">
+        <!-- Left Column: Event Info -->
+        <div class="col-md-8">
+            <h1 class="display-5 fw-bold text-success">@Model.EventName</h1>
+            <p class="lead text-muted mt-3">
+                @if (!string.IsNullOrEmpty(Model.Description))
+                {
+                    @Model.Description
+                }
+                else
+                {
+                    <span>No description provided for this event.</span>
+                }
+            </p>
+
+            <div class="row mt-5">
+                <div class="col-sm-6 mb-3">
+                    <div class="card border-0 bg-light p-3 h-100 shadow-sm">
+                        <h6 class="text-muted text-uppercase small fw-bold mb-1">Date</h6>
+                        <p class="mb-0 fs-5">📅 @Model.EventDate.ToString("dddd, dd MMMM yyyy")</p>
+                    </div>
+                </div>
+                <div class="col-sm-6 mb-3">
+                    <div class="card border-0 bg-light p-3 h-100 shadow-sm">
+                        <h6 class="text-muted text-uppercase small fw-bold mb-1">Location</h6>
+                        <p class="mb-0 fs-5">📍 @Model.Location</p>
+                    </div>
+                </div>
+                <div class="col-sm-6 mb-3">
+                    <div class="card border-0 bg-light p-3 h-100 shadow-sm">
+                        <h6 class="text-muted text-uppercase small fw-bold mb-1">Distance & Type</h6>
+                        <p class="mb-0 fs-5">🏃 @Model.Distance km - @Model.EventType</p>
+                    </div>
+                </div>
+                <div class="col-sm-6 mb-3">
+                    <div class="card border-0 bg-light p-3 h-100 shadow-sm">
+                        <h6 class="text-muted text-uppercase small fw-bold mb-1">Entry Fee</h6>
+                        <p class="mb-0 fs-5 text-success fw-bold">💳 R @Model.EntryFee</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Enrolment Card -->
+        <div class="col-md-4">
+            <div class="card shadow border-0 sticky-top" style="top: 20px;">
+                <div class="card-header bg-dark text-white text-center py-3">
+                    <h4 class="mb-0">Enter Event</h4>
+                </div>
+                <div class="card-body">
+                    <!-- 1. If user is NOT a Participant (Organiser or Not Logged In) -->
+                    @if (Context.Session.GetString("Role") != "Participant")
+                    {
+                        <div class="alert alert-warning text-center">
+                            You must be logged in as a <strong>Participant</strong> to enrol.
+                        </div>
+
+                        @if (Context.Session.GetInt32("UserID") == null)
+                        {
+                            <a asp-controller="Auth" asp-action="Login" class="btn btn-success w-100 btn-lg">Login to Enrol</a>
+                        }
+                    }
+                    else
+                    {
+                        <!-- 2. If user IS a Participant -->
+                        @if (Model.Categories == null || !Model.Categories.Any())
+                        {
+                            <div class="text-center py-3">
+                                <p class="text-danger fw-bold">No categories available.</p>
+                                <small class="text-muted">The organiser has not added any categories for this event yet.</small>
+                            </div>
+                        }
+                        else
+                        {
+                            <form asp-action="Enrol" method="post">
+                                <!-- Hidden field for Event ID -->
+                                <input type="hidden" name="eventId" value="@Model.EventID" />
+
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold">Select a Category</label>
+                                    <select name="categoryId" class="form-select form-select-lg" required>
+                                        <option value="">-- Choose Category --</option>
+                                        @foreach (var cat in Model.Categories)
+                                        {
+                                            <option value="@cat.CategoryID">
+                                                @cat.CategoryName @(cat.EntryFee.HasValue ? $"(R {cat.EntryFee})" : "")
+                                            </option>
+                                        }
+                                    </select>
+                                </div>
+
+                                <button type="submit" class="btn btn-success w-100 btn-lg shadow-sm">
+                                    Enrol Now
+                                </button>
+                            </form>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
