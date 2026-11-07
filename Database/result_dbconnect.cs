@@ -23,7 +23,9 @@ namespace event_management_system.Database
                 using (SqlConnection connect = new SqlConnection(connection_string))
                 {
                     connect.Open();
-                    string query = @"insert into results 
+
+                    // 1. Insert the new result
+                    string insert_query = @"insert into results 
                                      (EnrolmentID, FinishTime, FinishPosition, TotalParticipants, 
                                       CategoryPosition, TotalCategoryParticipants, Status, 
                                       RecordedAt, RecordedBy, Notes) 
@@ -31,7 +33,8 @@ namespace event_management_system.Database
                                      (@EnrolmentID, @FinishTime, @FinishPosition, @TotalParticipants, 
                                       @CategoryPosition, @TotalCategoryParticipants, @Status, 
                                       GETDATE(), @RecordedBy, @Notes);";
-                    using (SqlCommand cmd = new SqlCommand(query, connect))
+
+                    using (SqlCommand cmd = new SqlCommand(insert_query, connect))
                     {
                         cmd.Parameters.AddWithValue("@EnrolmentID", enrolment_id);
                         cmd.Parameters.AddWithValue("@FinishTime", finish_time.HasValue ? (object)finish_time.Value : DBNull.Value);
@@ -44,6 +47,15 @@ namespace event_management_system.Database
                         cmd.Parameters.AddWithValue("@Notes", string.IsNullOrWhiteSpace(notes) ? (object)DBNull.Value : notes);
                         cmd.ExecuteNonQuery();
                     }
+
+                    // 2. Automatically mark the enrolment as 'Completed'
+                    string update_query = "update enrolments set Status = 'Completed' where EnrolmentID = @EnrolmentID";
+                    using (SqlCommand update_cmd = new SqlCommand(update_query, connect))
+                    {
+                        update_cmd.Parameters.AddWithValue("@EnrolmentID", enrolment_id);
+                        update_cmd.ExecuteNonQuery();
+                    }
+
                     connect.Close();
                     message = "Result recorded successfully.";
                 }

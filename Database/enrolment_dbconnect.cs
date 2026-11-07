@@ -3,16 +3,12 @@ using event_management_system.Models;
 using event_management_system.Database.Interfaces;
 
 namespace event_management_system.Database
-{//start of namespace
-
+{
     public class enrolment_dbconnect : Ienrolment_dbconnect
-    {//start of class
-
+    {
         private readonly string connection_string = @"Data source=(localdb)\api_raceday;Database=raceday_database;Trusted_Connection=True;TrustServerCertificate=True;";
 
-        // ==================================================
         // STORE new enrolment
-        // ==================================================
         public string store_enrolment_info(int participant_id, int event_id, int category_id)
         {
             string message = "";
@@ -59,9 +55,7 @@ namespace event_management_system.Database
             return message;
         }
 
-        // ==================================================
-        // GET all enrolments (optionally by event)
-        // ==================================================
+        // GET all enrolments
         public List<Enrolments> get_all_enrolments(int? event_id = null)
         {
             List<Enrolments> enrolments = new List<Enrolments>();
@@ -91,9 +85,7 @@ namespace event_management_system.Database
             return enrolments;
         }
 
-        // ==================================================
         // GET by participant
-        // ==================================================
         public List<Enrolments> get_enrolments_by_participant(int participant_id)
         {
             List<Enrolments> enrolments = new List<Enrolments>();
@@ -121,9 +113,7 @@ namespace event_management_system.Database
             return enrolments;
         }
 
-        // ==================================================
         // GET by event
-        // ==================================================
         public List<Enrolments> get_enrolments_by_event(int event_id)
         {
             List<Enrolments> enrolments = new List<Enrolments>();
@@ -132,10 +122,15 @@ namespace event_management_system.Database
                 using (SqlConnection connect = new SqlConnection(connection_string))
                 {
                     connect.Open();
-                    string query = @"select EnrolmentID, ParticipantID, EventID, CategoryID, EnrolmentDate, 
-                                            Status, PaymentStatus, paymentReference, Notes, CreatedAt, UpdatedAt 
-                                     from enrolments where EventID = @EventID 
-                                     order by EnrolmentDate desc";
+                    string query = @"select e.EnrolmentID, e.ParticipantID, e.EventID, e.CategoryID, e.EnrolmentDate, 
+                                            e.Status, e.PaymentStatus, e.paymentReference, e.Notes, e.CreatedAt, e.UpdatedAt,
+                                            u.firstName + ' ' + u.lastName as ParticipantName,
+                                            c.CategoryName
+                                     from enrolments e
+                                     inner join users u on e.ParticipantID = u.userID
+                                     inner join categories c on e.CategoryID = c.CategoryID
+                                     where e.EventID = @EventID 
+                                     order by e.EnrolmentDate desc";
                     using (SqlCommand cmd = new SqlCommand(query, connect))
                     {
                         cmd.Parameters.AddWithValue("@EventID", event_id);
@@ -151,9 +146,7 @@ namespace event_management_system.Database
             return enrolments;
         }
 
-        // ==================================================
         // GET by id
-        // ==================================================
         public Enrolments? get_enrolment_by_id(int enrolment_id)
         {
             try
@@ -184,9 +177,7 @@ namespace event_management_system.Database
             return null;
         }
 
-        // ==================================================
         // UPDATE status (organiser)
-        // ==================================================
         public string update_enrolment_status(int enrolment_id, string status, string payment_status)
         {
             string message = "";
@@ -214,9 +205,7 @@ namespace event_management_system.Database
             return message;
         }
 
-        // ==================================================
         // CANCEL (participant)
-        // ==================================================
         public string cancel_enrolment(int enrolment_id)
         {
             string message = "";
@@ -241,12 +230,10 @@ namespace event_management_system.Database
             return message;
         }
 
-        // ==================================================
         // MAPPER
-        // ==================================================
         private Enrolments map_enrolment(SqlDataReader reader)
         {
-            return new Enrolments
+            var enr = new Enrolments
             {
                 EnrolmentID = Convert.ToInt32(reader["EnrolmentID"]),
                 ParticipantID = Convert.ToInt32(reader["ParticipantID"]),
@@ -260,6 +247,12 @@ namespace event_management_system.Database
                 CreatedAt = Convert.ToDateTime(reader["CreatedAt"]),
                 UpdatedAt = reader["UpdatedAt"] == DBNull.Value ? DateTime.MinValue : Convert.ToDateTime(reader["UpdatedAt"])
             };
+
+            // Safely try to read the joined columns
+            try { enr.ParticipantName = reader["ParticipantName"]?.ToString(); } catch { }
+            try { enr.CategoryName = reader["CategoryName"]?.ToString(); } catch { }
+
+            return enr;
         }
     }
 }
