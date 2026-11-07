@@ -30,7 +30,7 @@
             @foreach (var ev in Model)
             {
                 <div class="col">
-                    <div class="card h-100 event-card">
+                    <div class="card h-100 event-card shadow-sm">
                         @if (!string.IsNullOrEmpty(ev.BannerImage))
                         {
                             <img src="@ev.BannerImage" class="card-img-top" alt="@ev.EventName" style="height: 200px; object-fit: cover;">
@@ -38,16 +38,18 @@
                         else
                         {
                             <div class="card-img-top bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 200px;">
-                                <span class="fs-4">🏃 No Image</span>
+                                <!-- Replaced emoji -->
+                                <span class="fs-4"><i class="bi bi-image"></i> No Image</span>
                             </div>
                         }
 
                         <div class="card-body">
-                            <h5 class="card-title fw-bold" style="color: var(--raceday-navy);">@ev.EventName</h5>
+                            <h5 class="card-title fw-bold">@ev.EventName</h5>
                             <p class="card-text text-muted mb-1">
-                                📍 @ev.Location <br />
-                                📅 @ev.EventDate.ToString("dd MMM yyyy") <br />
-                                🏃 @ev.Distance km - @ev.EventType
+                                <!-- Replaced emojis -->
+                                <i class="bi bi-geo-alt-fill text-danger"></i> @ev.Location <br />
+                                <i class="bi bi-calendar-event text-primary"></i> @ev.EventDate.ToString("dd MMM yyyy") <br />
+                                <i class="bi bi-person-walking text-success"></i> @ev.Distance km - @ev.EventType
                             </p>
                         </div>
 

@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - RaceDay</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <!-- Bootstrap Icons CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/RaceDayMVC.styles.css" asp-append-version="true" />
 </head>
@@ -12,7 +14,6 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light">
             <div class="container">
-                <!-- 🆕 Simplified Logo matching screenshot #2 -->
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
                     <img src="~/images/logo.png" alt="RaceDay Logo" />
                     RaceDay
@@ -72,15 +73,14 @@
         </nav>
     </header>
 
-    <!-- RenderBody must be inside .container for your CSS flex rules to work -->
     <div class="container">
         @RenderBody()
     </div>
 
-    <!-- Footer sits outside the container -->
     <footer class="footer text-muted text-center">
         <div class="container" style="flex: none;">
-            &copy; 2026 - RaceDay - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            <!-- Replaced emoji with icon -->
+            &copy; 2026 - <i class="bi bi-activity text-success"></i> RaceDay - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
 
