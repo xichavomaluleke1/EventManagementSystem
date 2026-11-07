@@ -16,10 +16,17 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show">
+            @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
 
     <div class="card shadow border-0">
         <div class="card-body p-0">
-            <table class="table table-striped table-hover mb-0">
+            <table class="table table-hover mb-0">
                 <thead class="bg-dark text-white">
                     <tr>
                         <th>Participant</th>
@@ -60,14 +67,23 @@
                                     }
                                 </td>
                                 <td>
-                                    @if (enr.PaymentStatus == "Paid")
-                                    {
-                                        <span class="badge bg-success">@enr.PaymentStatus</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="badge bg-secondary">@enr.PaymentStatus</span>
-                                    }
+                                    <!-- 🆕 Interactive Payment Status Dropdown (Emojis Removed) -->
+                                    <form asp-action="UpdatePaymentStatus" method="post" class="d-inline">
+                                        <input type="hidden" name="enrolmentId" value="@enr.EnrolmentID" />
+                                        <input type="hidden" name="eventId" value="@Model.EventID" />
+                                        <input type="hidden" name="currentStatus" value="@enr.Status" />
+
+                                        <select name="paymentStatus"
+                                                class="form-select form-select-sm fw-bold border-0 shadow-sm"
+                                                style="width: auto; min-width: 130px; background-color: #f8f9fa;"
+                                                onchange="this.form.submit()">
+
+                                            <option value="Pending" selected="@(enr.PaymentStatus == "Pending")">Pending</option>
+                                            <option value="Paid" selected="@(enr.PaymentStatus == "Paid")">Paid</option>
+                                            <option value="Refunded" selected="@(enr.PaymentStatus == "Refunded")">Refunded</option>
+                                            <option value="Cancelled" selected="@(enr.PaymentStatus == "Cancelled")">Cancelled</option>
+                                        </select>
+                                    </form>
                                 </td>
                                 <td class="text-end">
                                     <a asp-action="CaptureResult" asp-route-enrolmentId="@enr.EnrolmentID" asp-route-eventId="@Model.EventID" class="btn btn-sm btn-primary">

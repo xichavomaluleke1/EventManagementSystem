@@ -63,12 +63,10 @@ namespace RaceDayMVC.Controllers
 
             try
             {
-                // Safely encode string inputs for the URL
                 string safeName = Uri.EscapeDataString(model.EventName);
                 string safeLocation = Uri.EscapeDataString(model.Location);
                 string safeDesc = string.IsNullOrEmpty(model.Description) ? "" : Uri.EscapeDataString(model.Description);
 
-                // Build the URL exactly as the API expects it (Query parameters, not JSON body)
                 string url = $"api/events?event_name={safeName}&event_date={model.EventDate:yyyy-MM-dd}" +
                              $"&location={safeLocation}&distance={model.Distance}&event_type={model.EventType}";
 
@@ -85,7 +83,6 @@ namespace RaceDayMVC.Controllers
                     return View(model);
                 }
 
-                // Get the newly created event's ID
                 var eventsResponse = await _apiService.GetAsync("api/organiser/events");
                 int newEventId = 0;
 
@@ -96,7 +93,6 @@ namespace RaceDayMVC.Controllers
                     if (events != null && events.Length > 0) newEventId = events[0].GetProperty("eventID").GetInt32();
                 }
 
-                // Upload Banner to Azure
                 if (model.BannerImage != null && model.BannerImage.Length > 0 && newEventId > 0)
                 {
                     using var content = new MultipartFormDataContent();
@@ -215,7 +211,6 @@ namespace RaceDayMVC.Controllers
                                 Status = enr.GetProperty("status").GetString() ?? "",
                                 PaymentStatus = enr.GetProperty("paymentStatus").GetString() ?? "",
 
-                                // 🆕 Safely read the new joined names from the API
                                 ParticipantName = enr.TryGetProperty("participantName", out var pName) && pName.ValueKind != JsonValueKind.Null
                                     ? pName.GetString() ?? $"Participant #{enr.GetProperty("participantID").GetInt32()}"
                                     : $"Participant #{enr.GetProperty("participantID").GetInt32()}",
@@ -234,6 +229,38 @@ namespace RaceDayMVC.Controllers
         }
 
         // ==========================================
+        // UPDATE PAYMENT STATUS
+        // ==========================================
+        [HttpPost]
+        public async Task<IActionResult> UpdatePaymentStatus(int enrolmentId, int eventId, string currentStatus, string paymentStatus)
+        {
+            if (!IsOrganiser()) return RedirectToAction("Login", "Auth");
+
+            try
+            {
+                // The API expects the current enrolment status and the new payment status
+                string url = $"api/enrolments/{enrolmentId}/status?status={currentStatus}&payment_status={paymentStatus}";
+
+                var response = await _apiService.PutAsync(url, new { });
+
+                if (response.IsSuccessStatusCode)
+                {
+                    TempData["SuccessMessage"] = "Payment status updated successfully!";
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Failed to update payment status.";
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"An error occurred: {ex.Message}";
+            }
+
+            return RedirectToAction("Enrolments", new { id = eventId });
+        }
+
+        // ==========================================
         // CAPTURE RESULTS
         // ==========================================
         [HttpGet]
@@ -249,7 +276,6 @@ namespace RaceDayMVC.Controllers
             if (!IsOrganiser()) return RedirectToAction("Login", "Auth");
             if (!ModelState.IsValid) return View(model);
 
-            // API expects finish_time as HH:mm:ss
             string url = $"api/events/{model.EventId}/results?enrolment_id={model.EnrolmentId}&finish_time={model.FinishTime}&status={model.Status}";
             if (model.FinishPosition.HasValue) url += $"&finish_position={model.FinishPosition}";
             if (model.TotalParticipants.HasValue) url += $"&total_participants={model.TotalParticipants}";
