@@ -10,55 +10,60 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand text-success fw-bold" asp-area="" asp-controller="Home" asp-action="Index">🏃 RaceDay</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light">
+            <div class="container">
+                <!-- 🆕 Simplified Logo matching screenshot #2 -->
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                    <img src="~/images/logo.png" alt="RaceDay Logo" />
+                    RaceDay
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-
-                    <ul class="navbar-nav flex-grow-1">
+                    <ul class="navbar-nav flex-grow-1 ms-4">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
                         @if (Context.Session.GetString("Role") == "Organiser")
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Organiser" asp-action="Dashboard">Dashboard</a>
+                                <a class="nav-link" asp-controller="Organiser" asp-action="Dashboard">Dashboard</a>
                             </li>
                         }
                         else if (Context.Session.GetString("Role") == "Participant")
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Participant" asp-action="MyEvents">My Events</a>
+                                <a class="nav-link" asp-controller="Participant" asp-action="MyEvents">My Events</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Participant" asp-action="MyResults">My Results</a>
+                                <a class="nav-link" asp-controller="Participant" asp-action="MyResults">My Results</a>
                             </li>
                         }
                     </ul>
-
-                    <ul class="navbar-nav">
+                    <ul class="navbar-nav align-items-center">
                         @if (Context.Session.GetInt32("UserID") != null)
                         {
+                            var profilePic = Context.Session.GetString("ProfilePictureURL");
+                            if (string.IsNullOrEmpty(profilePic)) { profilePic = Url.Content("~/images/default-avatar.png"); }
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Profile" asp-action="Index">Hello, @Context.Session.GetString("FirstName")!</a>
+                                <a asp-controller="Profile" asp-action="Index" title="My Profile">
+                                    <img src="@profilePic" class="rounded-circle shadow-sm" style="width: 40px; height: 40px; object-fit: cover; border: 2px solid #e9ecef;" alt="Profile" />
+                                </a>
                             </li>
-                            <li class="nav-item">
+                            <li class="nav-item ms-3">
                                 <form asp-controller="Auth" asp-action="Logout" method="post" class="d-inline">
-                                    <button type="submit" class="btn btn-link nav-link text-danger text-decoration-none">Logout</button>
+                                    <button type="submit" class="btn btn-link nav-link text-danger text-decoration-none p-0">Logout</button>
                                 </form>
                             </li>
                         }
                         else
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Auth" asp-action="Login">Login</a>
+                                <a class="nav-link" asp-controller="Auth" asp-action="Login">Login</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Auth" asp-action="Register">Register</a>
+                                <a class="btn btn-success ms-3" asp-controller="Auth" asp-action="Register">Register</a>
                             </li>
                         }
                     </ul>
@@ -67,16 +72,14 @@
         </nav>
     </header>
 
-    <!-- Standard container. The body's margin-bottom: 60px ensures no overlap -->
+    <!-- RenderBody must be inside .container for your CSS flex rules to work -->
     <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
+        @RenderBody()
     </div>
 
-    <!-- Footer exactly matching the classic template style -->
-    <footer class="border-top footer text-muted bg-light">
-        <div class="container">
+    <!-- Footer sits outside the container -->
+    <footer class="footer text-muted text-center">
+        <div class="container" style="flex: none;">
             &copy; 2026 - RaceDay - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>

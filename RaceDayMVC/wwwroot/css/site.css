@@ -1,8 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
 html {
     font-size: 14px;
-    /* This creates the boundary for the absolute footer */
-    position: relative;
-    min-height: 100%;
+    min-height: 100vh;
+    scroll-behavior: smooth;
 }
 
 @media (min-width: 768px) {
@@ -12,29 +13,207 @@ html {
 }
 
 body {
-    /* This reserves space at the bottom of the page so the absolute footer doesn't overlap content */
-    margin-bottom: 60px;
+    font-family: 'Inter', sans-serif;
+    background-color: #f4f7f6;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    margin-bottom: 0;
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+/* This magic line pushes the footer to the bottom */
+.container {
+    flex: 1 0 auto;
 }
 
-/* The classic footer rule */
-.footer {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    white-space: nowrap;
-    line-height: 60px; /* Vertically centers the text and forces exactly 60px height */
+/* --- buttons --- */
+.btn {
+    border-radius: 8px;
+    font-weight: 600;
+    padding: 10px 24px;
+    transition: all 0.3s ease;
+    letter-spacing: 0.3px;
 }
 
-/* Event Cards Hover Effect */
-.event-card {
-    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+/* Override Bootstrap's blue hover with RaceDay Green */
+.btn-primary:hover, .btn-primary:focus {
+    background-color: #198754 !important;
+    border-color: #198754 !important;
 }
 
-    .event-card:hover {
+.btn-outline-primary:hover, .btn-outline-primary:focus {
+    background-color: #198754 !important;
+    border-color: #198754 !important;
+    color: white !important;
+}
+
+.btn-success {
+    background-color: #198754;
+    box-shadow: 0 4px 12px rgba(25, 135, 84, 0.2);
+}
+
+    .btn-success:hover, .btn-success:focus {
+        background-color: #146c43 !important;
+        border-color: #146c43 !important;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(25, 135, 84, 0.3);
+    }
+
+/* --- forms and inputs --- */
+.form-control, .form-select {
+    border-radius: 8px;
+    border: 1px solid #ced4da;
+    padding: 12px 16px;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+    background-color: #f8f9fa;
+}
+
+    .form-control:focus, .form-select:focus {
+        background-color: #fff;
+        box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.15); /* Changed to green focus */
+        border-color: #198754;
+    }
+
+/* --- cards --- */
+.card {
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    background-color: #ffffff;
+}
+
+    .card.shadow-sm:hover {
         transform: translateY(-5px);
-        box-shadow: 0 .5rem 1rem rgba(0,0,0,.15) !important;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08) !important;
+    }
+
+.card-header {
+    border-radius: 16px 16px 0 0 !important;
+    font-weight: 600;
+}
+
+/* --- navbar --- */
+.navbar {
+    background-color: #ffffff !important;
+    border-bottom: 1px solid #e9ecef !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03) !important;
+    padding: 15px 0;
+}
+
+.navbar-brand {
+    display: flex;
+    align-items: center;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #1e293b !important;
+    letter-spacing: -0.5px;
+    padding-left: 0;
+}
+
+    .navbar-brand img {
+        height: 40px;
+        margin-right: 12px;
+    }
+
+.nav-link {
+    font-weight: 500;
+    color: #495057 !important;
+    transition: color 0.2s ease;
+}
+
+    /* Override Bootstrap's blue link hover with RaceDay Green */
+    .nav-link:hover, .nav-link:focus {
+        color: #198754 !important;
+    }
+
+/* --- tables and badges --- */
+.table th {
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    color: #6c757d;
+    border-bottom: 2px solid #e9ecef;
+    padding: 15px;
+}
+
+.table td {
+    padding: 15px;
+    vertical-align: middle;
+}
+
+.badge {
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    letter-spacing: 0.3px;
+}
+
+    .badge.bg-success, .badge.badge-confirmed {
+        background-color: #d1e7dd !important;
+        color: #0f5132 !important;
+    }
+
+    .badge.bg-warning, .badge.badge-pending {
+        background-color: #fff3cd !important;
+        color: #856404 !important;
+    }
+
+    .badge.bg-secondary, .badge.badge-cancelled {
+        background-color: #e2e3e5 !important;
+        color: #383d41 !important;
+    }
+
+/* --- footer --- */
+.footer {
+    background-color: #ffffff;
+    border-top: 1px solid #e9ecef;
+    padding: 20px 0;
+    position: static !important;
+    flex-shrink: 0;
+    margin-top: 40px;
+}
+
+/* --- Hero Section --- */
+.hero-section {
+    background: linear-gradient(to right, rgba(30, 41, 59, 0.85), rgba(30, 41, 59, 0.5)), url('/images/hero-bg.jpg');
+    background-size: cover;
+    background-position: center;
+    color: white;
+    padding: 100px 0;
+    margin-bottom: 40px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+    .hero-section h1 {
+        font-size: 3.5rem;
+        font-weight: 800;
+        letter-spacing: -1px;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+
+/* =========================================
+   FIXES FOR MY EVENTS PAGE ICONS
+   ========================================= */
+.icon-circle {
+    width: 50px;
+    height: 50px;
+    min-width: 50px; /* Prevents the circle from shrinking */
+    background-color: #f1f5f9;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 15px;
+}
+
+    .icon-circle img {
+        width: 24px;
+        height: 24px;
+        object-fit: contain; /* Keeps the icon perfectly sized and centered */
     }
