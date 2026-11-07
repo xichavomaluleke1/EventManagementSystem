@@ -8,7 +8,7 @@ on:
 
 jobs:
   build-and-test:
-    name: Build and Run Unit Tests
+    name: Build, Test, and Dockerize
     runs-on: ubuntu-latest
 
     steps:
@@ -21,10 +21,15 @@ jobs:
           dotnet-version: '8.0.x'
 
       - name: Restore dependencies
-        run: dotnet restore
+        run: dotnet restore event_management_system.slnx
 
-      - name: Build solution
-        run: dotnet build --no-restore --configuration Release
+      - name: Build solution (API & MVC)
+        run: dotnet build event_management_system.slnx --no-restore --configuration Release
 
       - name: Run unit tests
-        run: dotnet test --no-build --configuration Release --verbosity normal --logger "console;verbosity=detailed"
+        run: dotnet test event_management_system.slnx --no-build --configuration Release --verbosity normal --logger "console;verbosity=detailed"
+
+      # 🆕 Phase 8 Requirement: Build the MVC project in Docker
+      - name: Build Docker Image
+        run: |
+          docker build -t raceday-mvc -f RaceDayMVC/Dockerfile .
