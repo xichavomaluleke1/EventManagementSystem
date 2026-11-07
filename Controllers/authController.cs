@@ -5,22 +5,11 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace event_management_system.Controllers
 {
-    /// <summary>
-    /// Handles user authentication: register, login, logout, and current-user lookup.
-    /// </summary>
-    /// <remarks>
-    /// Passwords are hashed with BCrypt before storage. Sessions persist the
-    /// user ID and role, which are checked by every other controller for
-    /// role-based access control.
-    /// </remarks>
     [Route("api/authenticator")]
     [ApiController]
     public class authController : ControllerBase
     {
-        /// <summary>Role options for registration.</summary>
         public enum roles { Organiser, Participant }
-
-        /// <summary>Gender options for registration.</summary>
         public enum genders { Male, Female, Other }
 
         private readonly Iauth_dbconnect _auth_db;
@@ -30,25 +19,6 @@ namespace event_management_system.Controllers
             _auth_db = auth_db;
         }
 
-        /// <summary>
-        /// Registers a new user account (Organiser or Participant).
-        /// </summary>
-        /// <remarks>
-        /// Checks for duplicate email, hashes the password with BCrypt, and
-        /// stores the new user in the users table.
-        /// </remarks>
-        /// <param name="email">Unique email address.</param>
-        /// <param name="password">Plain text password (hashed before storage).</param>
-        /// <param name="firstname">User's first name.</param>
-        /// <param name="surname">User's last name.</param>
-        /// <param name="role">Organiser or Participant.</param>
-        /// <param name="date_of_birth">Date of birth (yyyy-MM-dd).</param>
-        /// <param name="gender">Male, Female, or Other.</param>
-        /// <param name="phone_number">Optional phone number.</param>
-        /// <response code="201">User registered successfully.</response>
-        /// <response code="400">Validation error.</response>
-        /// <response code="409">Email already exists.</response>
-        /// <response code="500">Database error.</response>
         [HttpPost("register")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -79,13 +49,6 @@ namespace event_management_system.Controllers
             return Created("", result);
         }
 
-        /// <summary>
-        /// Logs in an existing user and starts a session.
-        /// </summary>
-        /// <param name="email">Registered email address.</param>
-        /// <param name="password">Plain text password.</param>
-        /// <response code="200">Login successful; session created.</response>
-        /// <response code="401">Invalid credentials.</response>
         [HttpPost("login")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -109,14 +72,11 @@ namespace event_management_system.Controllers
                 message = "Login successful.",
                 userID = user.UserID,
                 role = user.Role,
-                firstName = user.FirstName
+                firstName = user.FirstName,
+                profilePictureURL = user.ProfilePictureURL ?? "" // 🆕 Added
             });
         }
 
-        /// <summary>
-        /// Ends the current user's session (logout).
-        /// </summary>
-        /// <response code="200">Logged out successfully.</response>
         [HttpPost("logout")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public IActionResult Logout()
@@ -125,11 +85,6 @@ namespace event_management_system.Controllers
             return Ok("Logged out successfully.");
         }
 
-        /// <summary>
-        /// Returns details of the currently authenticated user.
-        /// </summary>
-        /// <response code="200">Returns user details.</response>
-        /// <response code="401">Not authenticated.</response>
         [HttpGet("current-user")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
