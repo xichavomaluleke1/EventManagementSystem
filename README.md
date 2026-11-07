@@ -1,40 +1,59 @@
 # 🏃 RaceDay - Event Management System
 
+![CI Build](https://github.com/xichavomaluleke1/EventManagementSystem/actions/workflows/ci.yml/badge.svg?branch=main)
+![.NET 8](https://img.shields.io/badge/.NET-8.0-blueviolet)
+![Docker](https://img.shields.io/badge/Docker-Enabled-blue)
+
 ## 📋 Overview
 
-RaceDay is a full-stack web-based event management system designed specifically for the South African road running, walking, and cycling community. The platform allows Event Organisers to create and manage events, categories, and participant results, while Participants can browse upcoming events, enter events, track their personal performance history, and prepare for race day using live weather and route information.
+RaceDay is a full-stack, cloud-aware web-based event management system designed specifically for the South African road running, walking, and cycling community. 
+
+The platform is divided into three parts:
+1. **Part 1:** System planning (ERD, API Endpoint Plan, SQL Database Script).
+2. **Part 2:** ASP.NET Core Web API with session authentication and unit testing.
+3. **Part 3:** ASP.NET Core MVC Web Application, Azure Blob Storage integration, and Docker containerization.
 
 ---
 
 ## 👥 User Roles
 
-The system supports two distinct user roles:
+The system supports two distinct user roles with strict role-based access control:
 
 ### 🏢 Organiser
-
-- Create, edit, and delete events
-- Manage event categories (age and distance-based)
-- View all event enrolments
-- Capture and publish participant results
-- Upload event banner images
-- Dashboard showing event statistics and summaries
+- Create, edit, and delete events.
+- Manage event categories (age and distance-based).
+- View all event enrolments and update payment statuses.
+- Capture and publish participant results.
+- Upload event banner images to Azure Blob Storage.
+- Dashboard showing event statistics and summaries.
 
 ### 🏃 Participant
+- Create an account and manage their profile.
+- Browse upcoming events with filtering options.
+- Enter events by selecting a category.
+- View personal enrolment history.
+- Track personal race results and performance.
+- Upload profile pictures to Azure Blob Storage.
 
-- Create an account and manage profile
-- Browse upcoming events with filtering options
-- Enter events by selecting a category
-- View personal enrolment history
-- Track personal race results and performance
-- Upload profile picture
-- View event details with route information
+---
+
+## 🏗️ Architecture
+
+The application follows a clean 3-tier architecture:
+1. **Frontend:** ASP.NET Core MVC (`RaceDayMVC`)
+2. **Backend API:** ASP.NET Core Web API (`event_management_system`)
+3. **Database:** SQL Server via ADO.NET
+4. **Cloud Storage:** Azure Blob Storage for image handling
+
+*Note: The MVC application uses `HttpClient` to communicate with the API. It does not have direct access to the database or Azure.*
 
 ---
 
 ## 📁 Project Structure
 
-```
+```text
 EventManagementSystem/
+│
 ├── docs/
 │   ├── ERD.png
 │   ├── API ENDPOINT PLAN.pdf
@@ -42,54 +61,63 @@ EventManagementSystem/
 │   ├── tests-passing.png
 │   └── ci-build.png
 │
-├── Controllers/
-│   ├── authController.cs
-│   ├── usersController.cs
-│   ├── eventController.cs
-│   ├── categoryController.cs
-│   ├── enrolmentController.cs
-│   ├── resultController.cs
-│   ├── organiserController.cs
-│   └── participantController.cs
+├── event_management_system/              # Part 2: The API
+│   ├── Controllers/
+│   ├── Database/
+│   │   ├── Interfaces/
+│   │   └── *_dbconnect.cs
+│   ├── Models/
+│   ├── Services/                         # Azure Blob Service
+│   └── Program.cs
 │
-├── Database/
-│   ├── Interfaces/
-│   │   ├── Iauth_dbconnect.cs
-│   │   ├── Iusers_dbconnect.cs
-│   │   ├── Ievent_dbconnect.cs
-│   │   ├── Icategory_dbconnect.cs
-│   │   ├── Ienrolment_dbconnect.cs
-│   │   └── Iresult_dbconnect.cs
-│   ├── auth_dbconnect.cs
-│   ├── users_dbconnect.cs
-│   ├── event_dbconnect.cs
-│   ├── category_dbconnect.cs
-│   ├── enrolment_dbconnect.cs
-│   └── result_dbconnect.cs
-│
-├── Models/
-│   ├── Users.cs
-│   ├── Events.cs
-│   ├── Categories.cs
-│   ├── Enrolments.cs
-│   ├── Results.cs
-│   ├── EventOrganisers.cs
-│   └── Enums.cs
-│
-├── event_management_system.Tests/
+├── event_management_system.Tests/        # Part 2: Unit Tests
 │   ├── AuthControllerTests.cs
 │   ├── EventControllerTests.cs
 │   ├── EnrolmentControllerTests.cs
 │   └── FakeSession.cs
 │
+├── RaceDayMVC/                           # Part 3: The Frontend
+│   ├── Controllers/
+│   │   ├── AuthController.cs
+│   │   ├── HomeController.cs
+│   │   ├── OrganiserController.cs
+│   │   ├── ParticipantController.cs
+│   │   └── ProfileController.cs
+│   ├── Models/
+│   │   ├── CategoryFormViewModel.cs
+│   │   ├── CreateEventViewModel.cs
+│   │   ├── ErrorViewModel.cs
+│   │   ├── EventEnrolmentsViewModel.cs
+│   │   ├── EventViewModel.cs
+│   │   ├── LoginViewModel.cs
+│   │   ├── MyEventViewModel.cs
+│   │   ├── MyResultViewModel.cs
+│   │   ├── ProfileViewModel.cs
+│   │   ├── RegisterViewModel.cs
+│   │   └── ResultEntryViewModel.cs
+│   ├── Services/
+│   │   ├── ApiService.cs
+│   │   └── IApiService.cs
+│   ├── Views/
+│   │   ├── Auth/
+│   │   ├── Home/
+│   │   ├── Organiser/
+│   │   ├── Participant/
+│   │   ├── Profile/
+│   │   └── Shared/
+│   ├── wwwroot/
+│   │   ├── css/
+│   │   ├── images/
+│   │   ├── js/
+│   │   └── lib/
+│   ├── appsettings.json
+│   ├── Dockerfile                        # Docker configuration
+│   └── Program.cs
+│
 ├── .github/
 │   └── workflows/
 │       └── ci.yml
 │
-├── Program.cs
-├── appsettings.json
-├── event_management_system.csproj
-├── event_management_system.slnx
 └── README.md
 ```
 
@@ -138,6 +166,15 @@ All endpoints are documented with XML comments and testable through Swagger UI a
 
 ---
 
+## ☁️ Azure Blob Storage Integration
+
+In Part 3, Azure Blob Storage was integrated into the API to support image uploads. 
+* **Event Banners:** Organisers can upload banner images via the MVC app, which are sent to the API and stored in Azure.
+* **Profile Pictures:** Participants can upload profile pictures following the same process.
+* **Security:** The MVC application never communicates directly with Azure; all file handling goes through the API. Connection strings are kept secure in `appsettings.Development.json` and excluded from Git.
+
+---
+
 ## 🧪 Unit Testing
 
 The API includes **17 unit tests** covering authentication, events, and enrolments. All tests use **Moq** to fake the database layer — no SQL Server is needed to run them.
@@ -160,7 +197,7 @@ dotnet test
 
 Expected output:
 
-```
+```text
 Passed!  - Failed:     0, Passed:    17, Skipped:     0, Total:    17
 ```
 
@@ -178,6 +215,8 @@ Passed!  - Failed:     0, Passed:    17, Skipped:     0, Total:    17
 - [SQL Server](https://www.microsoft.com/en-us/sql-server/sql-server-downloads) (2019 or later)
 - [SQL Server Management Studio (SSMS)](https://docs.microsoft.com/en-us/sql/ssms/download-sql-server-management-studio-ssms)
 - [Git](https://git-scm.com/downloads)
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) (For Part 3)
+- An active Azure Account (For Blob Storage)
 
 ---
 
@@ -206,24 +245,25 @@ SELECT * FROM enrolments;
 ```
 
 **Expected Output:**
-
 - Database `raceday_database` created
 - 6 tables created
-- Seed data inserted:
-  - 4 Users (2 Organisers, 2 Participants)
-  - 4 Events
-  - 17 Categories
-  - 6 Enrolments
-  - 2 Results
+- Seed data inserted (4 Users, 4 Events, 17 Categories, 6 Enrolments, 2 Results)
 
 ---
 
-### Step 3: Configure the Connection String
+### Step 3: Configure the API (Azure & Database)
 
-Open `Database/auth_dbconnect.cs` and the other `*_dbconnect.cs` files. Confirm the connection string matches your SQL Server instance:
+1. Open `event_management_system/appsettings.Development.json`.
+2. Ensure your SQL Server connection string is correct in the `*_dbconnect.cs` files.
+3. Add your Azure Storage Connection String to `appsettings.Development.json`:
 
-```csharp
-private readonly string connection_string = @"Data source=(localdb)\api_raceday;Database=raceday_database;Trusted_Connection=True;TrustServerCertificate=True;";
+```json
+{
+  "AzureStorage": {
+    "ConnectionString": "YOUR_AZURE_CONNECTION_STRING_HERE",
+    "ContainerName": "raceday-images"
+  }
+}
 ```
 
 ---
@@ -241,14 +281,33 @@ The API will start and Swagger UI will open at `https://localhost:7284/swagger`.
 
 ---
 
-### Step 5: Run the Unit Tests
+### Step 5: Run the MVC Application
+
+Open a **second** terminal in the root folder:
 
 ```bash
-cd event_management_system.Tests
-dotnet test
+cd RaceDayMVC
+dotnet run
 ```
 
-All 17 tests should pass. **No SQL Server required** for the tests.
+The web app will start on a new port (e.g., `https://localhost:7039`).
+
+---
+
+### Step 6: Docker Setup (Part 3)
+
+The MVC application is fully containerised. 
+1. Ensure Docker Desktop is running.
+2. Ensure the API is running locally.
+3. Build the Docker image from the root folder:
+```bash
+docker build -t raceday-mvc -f RaceDayMVC/Dockerfile .
+```
+4. Run the container:
+```bash
+docker run -d -p 8080:8080 --name raceday-app -e API_BASE_URL="https://host.docker.internal:7284/" raceday-mvc
+```
+5. Access the app at `http://localhost:8080`.
 
 ---
 
@@ -277,7 +336,7 @@ The repository includes a GitHub Actions workflow that runs on every push to `ma
 | Checkout | Clones the repo |
 | Setup .NET 8 | Installs the SDK |
 | Restore | Downloads NuGet packages |
-| Build | Compiles both projects in Release mode |
+| Build | Compiles both API and MVC projects in Release mode |
 | Test | Runs all 17 unit tests |
 
 **No database is required in CI** because tests use Moq to fake the data layer.
@@ -299,6 +358,13 @@ Walkthrough of the ERD, API endpoint plan, and SQL script demonstrated live in S
 ### Part 2 - API Implementation & Testing
 
 [Part 2 Video](https://youtu.be/h_wIFnYOs64)
+
+---
+
+### Part 3 - MVC, Blob Storage & Docker
+
+[Part 3 Video](https://youtu.be/YOUR_PART_3_VIDEO_LINK_HERE)
+
 ---
 
 ## 📝 Part 1 Submission Checklist
@@ -335,6 +401,21 @@ Walkthrough of the ERD, API endpoint plan, and SQL script demonstrated live in S
 
 ---
 
+## 📝 Part 3 Submission Checklist
+
+- [x] ASP.NET Core MVC project created
+- [x] Consumes the Part 2 API (no direct DB access)
+- [x] Session-based authentication and role-based navigation
+- [x] Organiser Interface (Dashboard, Events, Categories, Enrolments, Results)
+- [x] Participant Interface (Home, Event Details, My Events, My Results, Profile)
+- [x] Azure Blob Storage integrated via the API
+- [x] UI Design matches RaceDay brand
+- [x] Dockerfile created and tested
+- [x] CI/CD workflow updated to build MVC project
+- [x] YouTube video link included
+
+---
+
 ## 📊 Technologies Used
 
 | Technology | Purpose |
@@ -342,11 +423,15 @@ Walkthrough of the ERD, API endpoint plan, and SQL script demonstrated live in S
 | **SQL Server** | Database management |
 | **ADO.NET** | Database access layer |
 | **ASP.NET Core Web API** | Backend REST API |
+| **ASP.NET Core MVC** | Frontend web application |
+| **Azure Blob Storage** | Cloud storage for images |
 | **BCrypt.Net-Next** | Password hashing |
 | **Swashbuckle.AspNetCore** | Swagger / OpenAPI docs |
 | **xUnit** | Unit test framework |
 | **Moq** | Mocking framework for tests |
+| **Docker** | Containerization |
 | **GitHub Actions** | CI/CD automation |
+| **Bootstrap 5** | Responsive UI framework |
 
 ---
 
