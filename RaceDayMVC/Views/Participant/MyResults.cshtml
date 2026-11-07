@@ -1,0 +1,75 @@
+﻿@model IEnumerable<RaceDayMVC.Models.MyResultViewModel>
+@{
+    ViewData["Title"] = "My Results";
+}
+
+<div class="container mt-4">
+    <h2 class="text-success fw-bold mb-4">My Race Results</h2>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info py-4 text-center">
+            <h4>No results recorded yet.</h4>
+            <p>Results are captured by the Organiser after the event concludes.</p>
+        </div>
+    }
+    else
+    {
+        <div class="card shadow border-0">
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Event</th>
+                            <th>Date</th>
+                            <th>Finish Time</th>
+                            <th>Position</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="fw-bold">@item.EventName</td>
+                                <td>@item.EventDate.ToString("dd MMM yyyy")</td>
+                                <td>
+                                    @if (item.FinishTime.HasValue)
+                                    {
+                                        <span class="badge bg-light text-dark fs-6">
+                                            @item.FinishTime.Value.ToString(@"hh\:mm\:ss")
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">N/A</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (item.FinishPosition.HasValue)
+                                    {
+                                        <span>@item.FinishPosition out of @item.TotalParticipants</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">N/A</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (item.Status == "Confirmed")
+                                    {
+                                        <span class="badge bg-success">@item.Status</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">@item.Status</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>

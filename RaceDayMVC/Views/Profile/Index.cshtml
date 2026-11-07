@@ -1,0 +1,90 @@
+﻿@model RaceDayMVC.Models.ProfileViewModel
+@{
+    ViewData["Title"] = "My Profile";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show">
+                    @TempData["SuccessMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show">
+                    @TempData["ErrorMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+
+            <div class="card shadow border-0">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">My Profile</h4>
+                </div>
+                <div class="card-body">
+
+                    <div class="row mb-4">
+                        <!-- Profile Picture Display -->
+                        <div class="col-md-4 text-center border-end">
+                            <div class="mb-3">
+                                @if (!string.IsNullOrEmpty(Model.ProfilePictureURL))
+                                {
+                                    <img src="@Model.ProfilePictureURL" alt="Profile Picture" class="rounded-circle shadow" style="width: 150px; height: 150px; object-fit: cover;" />
+                                }
+                                else
+                                {
+                                    <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center shadow mx-auto" style="width: 150px; height: 150px; font-size: 50px;">
+                                        👤
+                                    </div>
+                                }
+                            </div>
+
+                            <!-- 🆕 Only show the upload form to Participants -->
+                            @if (Context.Session.GetString("Role") == "Participant")
+                            {
+                                <form asp-action="UploadPicture" method="post" enctype="multipart/form-data">
+                                    <div class="mb-2">
+                                        <input type="file" name="picture" class="form-control form-control-sm" accept="image/*" required />
+                                    </div>
+                                    <button type="submit" class="btn btn-sm btn-outline-success w-100">Upload New Picture</button>
+                                </form>
+                            }
+                        </div>
+
+                        <!-- Profile Info Update Form -->
+                        <div class="col-md-8">
+                            <form asp-action="Update" method="post">
+                                <div class="mb-3">
+                                    <label class="form-label text-muted small">Email (Cannot be changed)</label>
+                                    <input asp-for="Email" class="form-control" readonly />
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label asp-for="FirstName" class="form-label fw-bold"></label>
+                                        <input asp-for="FirstName" class="form-control" required />
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label asp-for="LastName" class="form-label fw-bold"></label>
+                                        <input asp-for="LastName" class="form-control" required />
+                                    </div>
+                                </div>
+                                <div class="mb-4">
+                                    <label asp-for="PhoneNumber" class="form-label fw-bold"></label>
+                                    <input asp-for="PhoneNumber" class="form-control" />
+                                </div>
+
+                                <button type="submit" class="btn btn-success w-100">Save Changes</button>
+                            </form>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,45 @@
+﻿@model IEnumerable<RaceDayMVC.Models.MyEventViewModel>
+@{
+    ViewData["Title"] = "My Events";
+}
+
+<div class="container mt-4">
+    <h2 class="text-success fw-bold mb-4">My Enrolled Events</h2>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info py-4 text-center">
+            <h4>You haven't enrolled in any events yet.</h4>
+            <a asp-controller="Home" asp-action="Index" class="btn btn-success mt-3">Browse Events</a>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var item in Model)
+            {
+                <div class="col-md-6 mb-4">
+                    <div class="card shadow-sm border-0 h-100">
+                        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">@item.EventName</h5>
+                            @if (item.Status == "Confirmed")
+                            {
+                                <span class="badge bg-success">@item.Status</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-warning text-dark">@item.Status</span>
+                            }
+                        </div>
+                        <div class="card-body">
+                            <p class="mb-1"><strong>Date:</strong> @item.EventDate.ToString("dd MMM yyyy")</p>
+                            <p class="mb-1"><strong>Location:</strong> @item.Location</p>
+                            <p class="mb-1"><strong>Type:</strong> @item.EventType (@item.Distance km)</p>
+                            <p class="mb-0"><strong>Payment:</strong> @item.PaymentStatus</p>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
