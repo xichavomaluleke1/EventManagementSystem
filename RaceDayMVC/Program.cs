@@ -18,8 +18,9 @@ builder.Services.AddSingleton<System.Net.CookieContainer>();
 // Configure HttpClient to point to our API AND use the CookieContainer
 builder.Services.AddHttpClient("RaceDayApi", client =>
 {
-    // Use your API's HTTPS port. Check your API's launchSettings.json or console for the exact port.
-    client.BaseAddress = new Uri("https://localhost:7284/");
+    // Read from environment variable (for Docker), fallback to localhost (for local run)
+    string apiBaseUrl = Environment.GetEnvironmentVariable("API_BASE_URL") ?? "https://localhost:7284/";
+    client.BaseAddress = new Uri(apiBaseUrl);
 })
 .ConfigurePrimaryHttpMessageHandler(sp =>
 {
@@ -27,7 +28,9 @@ builder.Services.AddHttpClient("RaceDayApi", client =>
     return new HttpClientHandler
     {
         CookieContainer = cookieContainer,
-        UseCookies = true
+        UseCookies = true,
+        // Bypass SSL certificate validation (needed for Docker to talk to localhost API over HTTPS)
+        ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
     };
 });
 
@@ -43,7 +46,9 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
+// I removed app.UseHttpsRedirection() because Docker is serving HTTP on port 8080 internally.
+// If you want to test HTTPS locally, you can add it back conditionally, but HTTP is fine for the container.
+
 app.UseStaticFiles();
 app.UseRouting();
 
