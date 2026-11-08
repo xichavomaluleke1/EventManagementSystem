@@ -363,7 +363,7 @@ Walkthrough of the ERD, API endpoint plan, and SQL script demonstrated live in S
 
 ### Part 3 - MVC, Blob Storage & Docker
 
-[Part 3 Video](https://youtu.be/YOUR_PART_3_VIDEO_LINK_HERE)
+[Part 3 Video](https://youtu.be/jEUVyl4A1zk)
 
 ---
 
